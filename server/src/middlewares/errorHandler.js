@@ -20,11 +20,24 @@ const errorHandler = (err, req, res, next) => {
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
     switch (err.code) {
       case 'P2002': {
-        // meta.target is a string in MySQL (constraint name), array in Postgres
-        const target = err.meta?.target;
-        const field = Array.isArray(target) ? target[0] : (typeof target === 'string' ? target : 'Record');
-        const readable = field.replace(/[_-]/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
-        return res.status(409).json({ success: false, message: `${readable} already exists` });
+        // meta.target is a string in MySQL (constraint name) or array in Postgres
+        const target = err.meta?.target ?? '';
+        const raw = Array.isArray(target) ? target.join('_') : String(target);
+
+        // Map known unique fields to human-readable messages
+        const FIELD_MESSAGES = {
+          email:      'A user with this email address already exists',
+          employeeid: 'A user with this Employee ID already exists',
+          phone:      'A user with this phone number already exists',
+          name:       'A record with this name already exists',
+        };
+
+        // Check if the constraint name contains any known field keyword
+        const lower = raw.toLowerCase();
+        const matched = Object.keys(FIELD_MESSAGES).find((k) => lower.includes(k));
+        const message = matched ? FIELD_MESSAGES[matched] : 'This record already exists';
+
+        return res.status(409).json({ success: false, message });
       }
       case 'P2025':
         return res.status(404).json({ success: false, message: 'Record not found' });
