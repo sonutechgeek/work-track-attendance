@@ -1,0 +1,1479 @@
+
+<title>WorkTrack — Full-Stack Project Blueprint (MySQL)</title>
+<style>
+  :root {
+    --bg: #F2F4F7;
+    --surface: #FFFFFF;
+    --surface-2: #EBEEf3;
+    --border: #D3DBE6;
+    --border-strong: #B4C2D4;
+    --primary: #1C3A58;
+    --accent: #0B8F72;
+    --accent-bg: #E6F4F0;
+    --warn: #B85A1A;
+    --text: #1A2535;
+    --muted: #607080;
+    --admin-clr: #7A4A00;
+    --admin-bg: #FFF7E0;
+    --admin-border: #E8C96B;
+    --mgr-clr: #0A5F4F;
+    --mgr-bg: #E5F4F1;
+    --mgr-border: #6FCFBA;
+    --emp-clr: #1A3B6E;
+    --emp-bg: #E7EEF8;
+    --emp-border: #7FA8D8;
+    --mysql-clr: #00618A;
+    --mysql-bg: #E3F4FB;
+    --mysql-border: #7FCAE8;
+    --prisma-clr: #2D3748;
+    --prisma-bg: #EDF2F7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14.5px;
+    line-height: 1.7;
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    background: var(--primary);
+    padding: 52px 64px 44px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    right: -80px; top: -80px;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: rgba(11, 143, 114, 0.08);
+    pointer-events: none;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    right: 80px; bottom: -120px;
+    width: 260px; height: 260px;
+    border-radius: 50%;
+    background: rgba(11, 143, 114, 0.06);
+    pointer-events: none;
+  }
+  .eyebrow {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 14px;
+  }
+  .db-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(0, 97, 138, 0.35);
+    border: 1px solid rgba(127, 202, 232, 0.4);
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #7FCAE8;
+    margin-bottom: 16px;
+  }
+  .db-badge::before {
+    content: '▣';
+    font-size: 12px;
+    color: #52BBE0;
+  }
+  .h-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 46px;
+    font-weight: normal;
+    line-height: 1.08;
+    color: #FFFFFF;
+    text-wrap: balance;
+    margin-bottom: 18px;
+  }
+  .h-title em {
+    font-style: normal;
+    color: #52D4B0;
+  }
+  .h-sub {
+    font-size: 15.5px;
+    color: rgba(255,255,255,0.58);
+    max-width: 620px;
+    line-height: 1.6;
+  }
+  .h-meta {
+    display: flex;
+    gap: 0;
+    margin-top: 36px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 24px;
+    flex-wrap: wrap;
+  }
+  .h-meta-item {
+    padding-right: 32px;
+    margin-right: 32px;
+    border-right: 1px solid rgba(255,255,255,0.12);
+  }
+  .h-meta-item:last-child { border-right: none; margin-right: 0; }
+  .h-meta-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 3px;
+  }
+  .h-meta-val {
+    font-size: 14px;
+    color: rgba(255,255,255,0.85);
+    font-weight: 500;
+  }
+
+  /* ─── MAIN ─── */
+  .main { max-width: 1060px; margin: 0 auto; padding: 52px 32px 96px; }
+
+  /* ─── SECTION ─── */
+  .section { margin-bottom: 60px; }
+  .sec-eyebrow {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .sec-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 27px;
+    font-weight: normal;
+    color: var(--primary);
+    text-wrap: balance;
+    padding-bottom: 16px;
+    border-bottom: 1.5px solid var(--border);
+    margin-bottom: 24px;
+  }
+
+  /* ─── ROLE CARDS ─── */
+  .role-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .role-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 22px;
+    position: relative;
+    overflow: hidden;
+  }
+  .role-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .rc-admin::before { background: linear-gradient(90deg, #C49A00, #E8B800); }
+  .rc-manager::before { background: linear-gradient(90deg, #0B8F72, #1AB090); }
+  .rc-employee::before { background: linear-gradient(90deg, #2B5BB5, #4478D4); }
+  .role-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .tag-admin { background: var(--admin-bg); color: var(--admin-clr); border: 1px solid var(--admin-border); }
+  .tag-manager { background: var(--mgr-bg); color: var(--mgr-clr); border: 1px solid var(--mgr-border); }
+  .tag-employee { background: var(--emp-bg); color: var(--emp-clr); border: 1px solid var(--emp-border); }
+  .role-name { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .rc-admin .role-name { color: var(--admin-clr); }
+  .rc-manager .role-name { color: var(--mgr-clr); }
+  .rc-employee .role-name { color: var(--emp-clr); }
+  .role-blurb { font-size: 12.5px; color: var(--muted); margin-bottom: 16px; line-height: 1.55; }
+  .perm-list { list-style: none; }
+  .perm-list li {
+    font-size: 12.5px;
+    padding: 4px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    color: var(--text);
+    border-bottom: 1px solid var(--bg);
+  }
+  .perm-list li:last-child { border-bottom: none; }
+  .check {
+    flex-shrink: 0;
+    width: 14px; height: 14px;
+    border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px;
+    font-weight: 900;
+    margin-top: 2px;
+  }
+  .rc-admin .check { background: var(--admin-bg); color: var(--admin-clr); }
+  .rc-manager .check { background: var(--mgr-bg); color: var(--mgr-clr); }
+  .rc-employee .check { background: var(--emp-bg); color: var(--emp-clr); }
+
+  /* ─── ARCH LAYERS ─── */
+  .arch-stack { display: flex; flex-direction: column; gap: 0; }
+  .arch-layer {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 14px 20px;
+  }
+  .arch-layer:first-child { border-radius: 5px 5px 0 0; }
+  .arch-layer:last-child { border-radius: 0 0 5px 5px; }
+  .arch-layer + .arch-layer { border-top: none; }
+  .arch-lbl {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    width: 100px;
+    flex-shrink: 0;
+  }
+  .arch-chips { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; }
+  .chip {
+    padding: 4px 12px;
+    border-radius: 3px;
+    font-size: 12.5px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--primary);
+  }
+  .chip-accent { background: var(--accent-bg); color: var(--accent); border-color: #A0D9CC; }
+  .chip-warn { background: #FDF0E8; color: var(--warn); border-color: #F0C4A0; }
+  .chip-dark { background: var(--primary); color: white; border-color: var(--primary); }
+  .chip-mysql { background: var(--mysql-bg); color: var(--mysql-clr); border-color: var(--mysql-border); font-weight: 700; }
+  .chip-prisma { background: #E8EAF0; color: #2D3748; border-color: #B0BAC8; font-weight: 600; }
+
+  /* ─── TECH TABLE ─── */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 5px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  thead th {
+    background: var(--surface-2);
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1.5px solid var(--border);
+  }
+  td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    color: var(--text);
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg); }
+  td:first-child {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  code {
+    font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+    font-size: 12px;
+    background: var(--surface-2);
+    color: var(--accent);
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+  .hl-mysql { background: var(--mysql-bg); color: var(--mysql-clr); border-color: var(--mysql-border); }
+  .hl-prisma { background: #E8EAF0; color: #2D3748; border-color: #B0BAC8; }
+
+  /* ─── MODEL CARDS ─── */
+  .model-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .model-hdr {
+    background: var(--primary);
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .model-name {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .model-note { font-size: 11.5px; opacity: 0.55; }
+  .field-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0;
+    padding: 7px 20px;
+    border-bottom: 1px solid var(--bg);
+    font-size: 13px;
+  }
+  .field-row:last-child { border-bottom: none; }
+  .field-row:hover { background: var(--bg); }
+  .field-row.fk-row { background: #F7FBFF; }
+  .field-row.fk-row:hover { background: #EEF5FC; }
+  .field-row.uniq-row { background: #FAFFF9; }
+  .fn {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    min-width: 175px;
+    flex-shrink: 0;
+  }
+  .fn-pk { color: var(--mysql-clr); font-weight: 700; }
+  .fn-fk { color: #1565C0; }
+  .ft {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #7048B8;
+    min-width: 115px;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .fd { color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+  .req {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 1px 6px; border-radius: 2px;
+    margin-left: 6px;
+    background: #FDE8E8; color: #B02020;
+  }
+  .opt {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 1px 6px; border-radius: 2px;
+    margin-left: 6px;
+    background: var(--surface-2); color: var(--muted);
+  }
+  .pk-badge {
+    font-size: 9.5px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 1px 6px; border-radius: 2px;
+    margin-left: 6px;
+    background: var(--mysql-bg); color: var(--mysql-clr);
+    border: 1px solid var(--mysql-border);
+  }
+  .fk-badge {
+    font-size: 9.5px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 1px 6px; border-radius: 2px;
+    margin-left: 6px;
+    background: #E3ECFB; color: #1565C0;
+    border: 1px solid #A8C4F0;
+  }
+  .uniq-badge {
+    font-size: 9.5px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 1px 6px; border-radius: 2px;
+    margin-left: 6px;
+    background: #EDF7ED; color: #1B5E20;
+    border: 1px solid #A5D6A7;
+  }
+  .model-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* ─── PRISMA ENUM BOX ─── */
+  .enum-box {
+    background: #F4F5F8;
+    border: 1px solid #D0D5E0;
+    border-left: 3px solid #5C6BC0;
+    border-radius: 0 4px 4px 0;
+    padding: 10px 16px;
+    margin-bottom: 12px;
+  }
+  .enum-title {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: #3949AB;
+    margin-bottom: 6px;
+  }
+  .enum-vals {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .enum-val {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11.5px;
+    background: white;
+    border: 1px solid #C5CAE9;
+    border-radius: 3px;
+    padding: 2px 8px;
+    color: #3949AB;
+  }
+
+  /* ─── API ROUTES ─── */
+  .route-section { margin-bottom: 28px; }
+  .route-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .route-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .route-rows { display: flex; flex-direction: column; gap: 4px; }
+  .rr {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 8px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    flex-wrap: wrap;
+  }
+  .rm {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 10.5px;
+    font-weight: 800;
+    width: 46px;
+    flex-shrink: 0;
+    letter-spacing: 0.04em;
+  }
+  .rm-get { color: #1565C0; }
+  .rm-post { color: #1B5E20; }
+  .rm-patch { color: #B85A00; }
+  .rm-del { color: #B71C1C; }
+  .rp {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    color: var(--primary);
+    flex: 1;
+    min-width: 200px;
+  }
+  .rd { font-size: 12px; color: var(--muted); }
+  .ra {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .ra-admin { background: var(--admin-bg); color: var(--admin-clr); }
+  .ra-manager { background: var(--mgr-bg); color: var(--mgr-clr); }
+  .ra-employee { background: var(--emp-bg); color: var(--emp-clr); }
+  .ra-all { background: var(--surface-2); color: var(--muted); }
+
+  /* ─── SECURITY ─── */
+  .sec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .sec-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 5px 5px 0;
+    padding: 14px 18px;
+  }
+  .sec-item-title { font-size: 13.5px; font-weight: 600; color: var(--primary); margin-bottom: 4px; }
+  .sec-item-body { font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+  .sec-item-body code { font-size: 11px; }
+
+  /* ─── PHASES ─── */
+  .phases { display: flex; flex-direction: column; gap: 14px; }
+  .phase {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 20px 24px 20px 20px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+  .phase-num {
+    flex-shrink: 0;
+    width: 40px; height: 40px;
+    border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: Georgia, serif;
+    font-size: 18px;
+    font-weight: normal;
+    color: white;
+  }
+  .pn-1 { background: var(--accent); }
+  .pn-2 { background: #1B6FB5; }
+  .pn-3 { background: #8B4A00; }
+  .pn-4 { background: #6B218A; }
+  .pn-5 { background: var(--warn); }
+  .pn-6 { background: #1A2535; }
+  .phase-body { flex: 1; }
+  .phase-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .phase-name { font-size: 16px; font-weight: 600; color: var(--primary); }
+  .phase-wks {
+    font-size: 12px; color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    background: var(--surface-2);
+    padding: 3px 10px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+  .phase-tasks { display: flex; flex-direction: column; gap: 3px; }
+  .pt {
+    font-size: 13px;
+    color: var(--text);
+    padding: 3px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .pt::before {
+    content: '–';
+    color: var(--border-strong);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ─── DECISIONS ─── */
+  .decision {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--primary);
+    border-radius: 0 5px 5px 0;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+  }
+  .decision-title { font-size: 14.5px; font-weight: 600; color: var(--primary); margin-bottom: 6px; }
+  .decision-body { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .decision-body strong { color: var(--text); font-weight: 600; }
+  .decision-body code { font-size: 11.5px; }
+
+  /* ─── FOLDER STRUCTURE ─── */
+  .folder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .folder-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .folder-hdr {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.04em;
+  }
+  .folder-tree {
+    padding: 14px 16px;
+    font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.85;
+    color: var(--text);
+  }
+  .tree-dir { color: var(--primary); font-weight: 600; }
+  .tree-file { color: var(--muted); }
+  .tree-accent { color: var(--accent); font-weight: 500; }
+  .tree-mysql { color: var(--mysql-clr); font-weight: 600; }
+  .tree-prisma { color: #3949AB; font-weight: 600; }
+  .tree-indent { padding-left: 16px; }
+  .tree-indent2 { padding-left: 32px; }
+
+  /* ─── FRONTEND PAGES ─── */
+  .pages-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .pages-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .pages-hdr {
+    padding: 10px 16px;
+    font-size: 12.5px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .phdr-admin { background: var(--admin-bg); color: var(--admin-clr); }
+  .phdr-manager { background: var(--mgr-bg); color: var(--mgr-clr); }
+  .phdr-employee { background: var(--emp-bg); color: var(--emp-clr); }
+  .pages-list { padding: 10px 16px; }
+  .page-item {
+    padding: 5px 0;
+    font-size: 12.5px;
+    border-bottom: 1px solid var(--bg);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .page-item:last-child { border-bottom: none; }
+  .page-route { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11.5px; color: var(--accent); }
+  .page-name { color: var(--text); font-weight: 500; }
+  .page-desc { color: var(--muted); font-size: 11.5px; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 800px) {
+    .header { padding: 32px 24px; }
+    .h-title { font-size: 30px; }
+    .main { padding: 32px 16px 64px; }
+    .role-grid, .model-grid, .sec-grid, .folder-grid, .pages-grid { grid-template-columns: 1fr; }
+    .rr { flex-wrap: wrap; }
+    .phase { flex-direction: column; }
+  }
+</style>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="eyebrow">Full-Stack Project Blueprint &nbsp;·&nbsp; Node.js + React</div>
+  <div class="db-badge">MySQL Edition — Prisma ORM</div>
+  <h1 class="h-title">WorkTrack — <em>Attendance &amp;<br>Leave Management System</em></h1>
+  <p class="h-sub">A comprehensive blueprint covering architecture, Prisma schema models, SQL table design, API endpoints, security strategy, and implementation phases — built on MySQL 8 with full relational integrity.</p>
+  <div class="h-meta">
+    <div class="h-meta-item">
+      <div class="h-meta-label">Backend</div>
+      <div class="h-meta-val">Node.js · Express · MySQL 8</div>
+    </div>
+    <div class="h-meta-item">
+      <div class="h-meta-label">ORM</div>
+      <div class="h-meta-val">Prisma 5 · mysql2 driver</div>
+    </div>
+    <div class="h-meta-item">
+      <div class="h-meta-label">Frontend</div>
+      <div class="h-meta-val">React 18 · Redux Toolkit · Tailwind</div>
+    </div>
+    <div class="h-meta-item">
+      <div class="h-meta-label">Real-time</div>
+      <div class="h-meta-val">Socket.io</div>
+    </div>
+    <div class="h-meta-item">
+      <div class="h-meta-label">Timeline</div>
+      <div class="h-meta-val">8 Weeks · 6 Phases</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- ROLES -->
+  <section class="section">
+    <div class="sec-eyebrow">Access Control</div>
+    <h2 class="sec-title">Role-Based Hierarchy</h2>
+    <div class="role-grid">
+      <div class="role-card rc-admin">
+        <div class="role-tag tag-admin">Admin</div>
+        <div class="role-name">System Administrator</div>
+        <p class="role-blurb">Full organization-wide access. Manages the entire workforce structure and has visibility into all data.</p>
+        <ul class="perm-list">
+          <li><span class="check">✓</span>Create &amp; manage departments</li>
+          <li><span class="check">✓</span>Create employees &amp; assign roles</li>
+          <li><span class="check">✓</span>Assign employees to managers</li>
+          <li><span class="check">✓</span>View all attendance records</li>
+          <li><span class="check">✓</span>Approve / reject any leave</li>
+          <li><span class="check">✓</span>Generate organization-wide reports</li>
+          <li><span class="check">✓</span>Manage leave balances</li>
+        </ul>
+      </div>
+      <div class="role-card rc-manager">
+        <div class="role-tag tag-manager">Manager</div>
+        <div class="role-name">Team Manager</div>
+        <p class="role-blurb">Scoped to their assigned team. Cannot see data outside of employees reporting to them.</p>
+        <ul class="perm-list">
+          <li><span class="check">✓</span>View team member profiles</li>
+          <li><span class="check">✓</span>View team attendance records</li>
+          <li><span class="check">✓</span>Approve / reject team leave requests</li>
+          <li><span class="check">✓</span>View team leave history &amp; balances</li>
+          <li><span class="check">✓</span>View team dashboard &amp; daily status</li>
+          <li><span class="check">✓</span>Mark own attendance</li>
+          <li><span class="check">✓</span>Apply for own leave</li>
+        </ul>
+      </div>
+      <div class="role-card rc-employee">
+        <div class="role-tag tag-employee">Employee</div>
+        <div class="role-name">Standard Employee</div>
+        <p class="role-blurb">Access restricted to personal data only. Cannot view colleagues' records or organizational data.</p>
+        <ul class="perm-list">
+          <li><span class="check">✓</span>View own profile</li>
+          <li><span class="check">✓</span>Mark daily attendance (check-in/out)</li>
+          <li><span class="check">✓</span>View own attendance history</li>
+          <li><span class="check">✓</span>Apply for leave</li>
+          <li><span class="check">✓</span>View own leave history &amp; balance</li>
+          <li><span class="check">✓</span>View personal dashboard stats</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ARCHITECTURE -->
+  <section class="section">
+    <div class="sec-eyebrow">System Design</div>
+    <h2 class="sec-title">Architecture Overview</h2>
+    <div class="arch-stack">
+      <div class="arch-layer">
+        <div class="arch-lbl">Client Layer</div>
+        <div class="arch-chips">
+          <span class="chip chip-dark">React 18</span>
+          <span class="chip">Redux Toolkit</span>
+          <span class="chip">React Router v6</span>
+          <span class="chip">Tailwind CSS</span>
+          <span class="chip">Recharts</span>
+          <span class="chip">Socket.io Client</span>
+          <span class="chip">Leaflet.js</span>
+        </div>
+      </div>
+      <div class="arch-layer">
+        <div class="arch-lbl">API Gateway</div>
+        <div class="arch-chips">
+          <span class="chip chip-accent">Express.js</span>
+          <span class="chip">Helmet</span>
+          <span class="chip">CORS</span>
+          <span class="chip">express-rate-limit</span>
+          <span class="chip">Morgan logger</span>
+          <span class="chip">Joi validation</span>
+        </div>
+      </div>
+      <div class="arch-layer">
+        <div class="arch-lbl">Auth Layer</div>
+        <div class="arch-chips">
+          <span class="chip chip-warn">JWT Access Token (15 min)</span>
+          <span class="chip chip-warn">Refresh Token (7 days)</span>
+          <span class="chip">bcrypt hashing</span>
+          <span class="chip">HTTP-only cookies</span>
+          <span class="chip">RBAC middleware</span>
+        </div>
+      </div>
+      <div class="arch-layer">
+        <div class="arch-lbl">Business Layer</div>
+        <div class="arch-chips">
+          <span class="chip">Controllers (MVC)</span>
+          <span class="chip">Services</span>
+          <span class="chip">Validators</span>
+          <span class="chip">Winston audit logger</span>
+          <span class="chip">Socket.io server</span>
+        </div>
+      </div>
+      <div class="arch-layer">
+        <div class="arch-lbl">Data Layer</div>
+        <div class="arch-chips">
+          <span class="chip chip-mysql">MySQL 8.x</span>
+          <span class="chip chip-prisma">Prisma ORM</span>
+          <span class="chip">mysql2 driver</span>
+          <span class="chip">Prisma Migrate</span>
+          <span class="chip">Foreign keys + ON DELETE</span>
+          <span class="chip">Soft deletes</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECH STACK -->
+  <section class="section">
+    <div class="sec-eyebrow">Dependencies</div>
+    <h2 class="sec-title">Full Technology Stack</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Layer</th><th>Technology</th><th>Version</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Runtime</td><td>Node.js</td><td>20 LTS</td><td>Server-side JavaScript runtime</td></tr>
+          <tr><td>Framework</td><td>Express.js</td><td>4.x</td><td>REST API server, routing, middleware</td></tr>
+          <tr><td>Database</td><td><code class="hl-mysql">MySQL</code></td><td>8.x</td><td>Primary relational store — ACID transactions, foreign keys, joins</td></tr>
+          <tr><td>ORM</td><td><code class="hl-prisma">Prisma</code></td><td>5.x</td><td>Type-safe queries, schema migration, relation management</td></tr>
+          <tr><td>DB Driver</td><td>mysql2</td><td>3.x</td><td>Low-level MySQL connection pool used by Prisma internally</td></tr>
+          <tr><td>Auth</td><td>jsonwebtoken</td><td>9.x</td><td>JWT access &amp; refresh token signing</td></tr>
+          <tr><td>Auth</td><td>bcryptjs</td><td>2.x</td><td>Password hashing (salt rounds: 12)</td></tr>
+          <tr><td>Real-time</td><td>Socket.io</td><td>4.x</td><td>Live timer, notifications, presence</td></tr>
+          <tr><td>Validation</td><td>Joi</td><td>17.x</td><td>Request schema validation before controller</td></tr>
+          <tr><td>Security</td><td>Helmet</td><td>7.x</td><td>HTTP security headers</td></tr>
+          <tr><td>Security</td><td>express-rate-limit</td><td>7.x</td><td>API rate limiting per IP / user</td></tr>
+          <tr><td>Logging</td><td>Winston + Morgan</td><td>latest</td><td>Structured logging &amp; HTTP audit trail</td></tr>
+          <tr><td>Env</td><td>dotenv</td><td>16.x</td><td>Environment variable management</td></tr>
+          <tr><td>UI Framework</td><td>React</td><td>18.x</td><td>Component-based UI</td></tr>
+          <tr><td>Build Tool</td><td>Vite</td><td>5.x</td><td>Fast dev server &amp; bundler</td></tr>
+          <tr><td>State</td><td>Redux Toolkit</td><td>2.x</td><td>Global state management</td></tr>
+          <tr><td>Data Fetching</td><td>React Query (TanStack)</td><td>5.x</td><td>Server state, caching, refetching</td></tr>
+          <tr><td>HTTP Client</td><td>Axios</td><td>1.x</td><td>API calls, interceptors, token refresh</td></tr>
+          <tr><td>Styling</td><td>Tailwind CSS</td><td>3.x</td><td>Utility-first styling</td></tr>
+          <tr><td>Forms</td><td>React Hook Form + Zod</td><td>7.x</td><td>Form state &amp; schema validation</td></tr>
+          <tr><td>Charts</td><td>Recharts</td><td>2.x</td><td>Dashboard analytics charts</td></tr>
+          <tr><td>Maps</td><td>Leaflet.js</td><td>1.x</td><td>Attendance location display</td></tr>
+          <tr><td>Notifications</td><td>react-hot-toast</td><td>2.x</td><td>Toast notifications</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- FOLDER STRUCTURE -->
+  <section class="section">
+    <div class="sec-eyebrow">MVC Architecture</div>
+    <h2 class="sec-title">Project Folder Structure</h2>
+    <div class="folder-grid">
+      <div class="folder-block">
+        <div class="folder-hdr">⬡ Backend — /server</div>
+        <div class="folder-tree">
+<div class="tree-dir">server/</div>
+<div class="tree-indent"><span class="tree-prisma">prisma/</span><span style="color:#aaa"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← Prisma home</span></div>
+<div class="tree-indent2"><span class="tree-prisma">schema.prisma</span><span style="color:#aaa"> ← all models</span></div>
+<div class="tree-indent2"><span class="tree-file">migrations/ &nbsp;&nbsp;</span><span style="color:#aaa">← auto-generated</span></div>
+<div class="tree-indent2"><span class="tree-file">seed.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#aaa">← initial data</span></div>
+<div class="tree-indent"><span class="tree-dir">config/</span></div>
+<div class="tree-indent2"><span class="tree-file">prisma.js &nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#aaa">← PrismaClient singleton</span></div>
+<div class="tree-indent2"><span class="tree-file">socket.js &nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#aaa">← Socket.io setup</span></div>
+<div class="tree-indent2"><span class="tree-file">logger.js &nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#aaa">← Winston config</span></div>
+<div class="tree-indent"><span class="tree-dir">controllers/</span></div>
+<div class="tree-indent2"><span class="tree-file">authController.js</span></div>
+<div class="tree-indent2"><span class="tree-file">userController.js</span></div>
+<div class="tree-indent2"><span class="tree-file">departmentController.js</span></div>
+<div class="tree-indent2"><span class="tree-file">attendanceController.js</span></div>
+<div class="tree-indent2"><span class="tree-file">leaveController.js</span></div>
+<div class="tree-indent2"><span class="tree-file">reportController.js</span></div>
+<div class="tree-indent"><span class="tree-dir">routes/</span></div>
+<div class="tree-indent2"><span class="tree-file">auth.routes.js</span></div>
+<div class="tree-indent2"><span class="tree-file">user.routes.js</span></div>
+<div class="tree-indent2"><span class="tree-file">department.routes.js</span></div>
+<div class="tree-indent2"><span class="tree-file">attendance.routes.js</span></div>
+<div class="tree-indent2"><span class="tree-file">leave.routes.js</span></div>
+<div class="tree-indent2"><span class="tree-file">report.routes.js</span></div>
+<div class="tree-indent"><span class="tree-dir">middlewares/</span></div>
+<div class="tree-indent2"><span class="tree-accent">auth.middleware.js &nbsp;&nbsp;</span><span style="color:#aaa">← JWT verify</span></div>
+<div class="tree-indent2"><span class="tree-accent">rbac.middleware.js &nbsp;&nbsp;</span><span style="color:#aaa">← role guard</span></div>
+<div class="tree-indent2"><span class="tree-file">rateLimiter.js</span></div>
+<div class="tree-indent2"><span class="tree-file">errorHandler.js</span></div>
+<div class="tree-indent2"><span class="tree-file">validate.js</span></div>
+<div class="tree-indent"><span class="tree-dir">validations/ &nbsp;</span><span style="color:#aaa">← Joi schemas</span></div>
+<div class="tree-indent"><span class="tree-dir">services/ &nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#aaa">← business logic</span></div>
+<div class="tree-indent"><span class="tree-dir">utils/</span></div>
+<div class="tree-indent2"><span class="tree-file">apiResponse.js</span></div>
+<div class="tree-indent2"><span class="tree-file">AppError.js</span></div>
+<div class="tree-indent"><span class="tree-accent">app.js</span></div>
+<div class="tree-indent"><span class="tree-accent">server.js</span></div>
+<div class="tree-indent"><span class="tree-file">.env.example</span></div>
+        </div>
+      </div>
+      <div class="folder-block">
+        <div class="folder-hdr">⬡ Frontend — /client</div>
+        <div class="folder-tree">
+<div class="tree-dir">client/src/</div>
+<div class="tree-indent"><span class="tree-dir">api/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#aaa">← Axios instances</span></div>
+<div class="tree-indent2"><span class="tree-file">axiosInstance.js</span></div>
+<div class="tree-indent2"><span class="tree-file">auth.api.js</span></div>
+<div class="tree-indent2"><span class="tree-file">attendance.api.js</span></div>
+<div class="tree-indent2"><span class="tree-file">leave.api.js</span></div>
+<div class="tree-indent"><span class="tree-dir">store/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#aaa">← Redux slices</span></div>
+<div class="tree-indent2"><span class="tree-accent">authSlice.js</span></div>
+<div class="tree-indent2"><span class="tree-file">attendanceSlice.js</span></div>
+<div class="tree-indent2"><span class="tree-file">leaveSlice.js</span></div>
+<div class="tree-indent2"><span class="tree-file">store.js</span></div>
+<div class="tree-indent"><span class="tree-dir">hooks/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#aaa">← custom hooks</span></div>
+<div class="tree-indent2"><span class="tree-accent">useTimer.js &nbsp;&nbsp;</span><span style="color:#aaa">← live clock</span></div>
+<div class="tree-indent2"><span class="tree-accent">useGeoLocation.js</span></div>
+<div class="tree-indent2"><span class="tree-accent">useSocket.js</span></div>
+<div class="tree-indent2"><span class="tree-file">useAuth.js</span></div>
+<div class="tree-indent"><span class="tree-dir">pages/</span></div>
+<div class="tree-indent2"><span class="tree-dir">admin/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#aaa">← admin views</span></div>
+<div class="tree-indent2"><span class="tree-dir">manager/ &nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#aaa">← manager views</span></div>
+<div class="tree-indent2"><span class="tree-dir">employee/ &nbsp;&nbsp;&nbsp;</span><span style="color:#aaa">← employee views</span></div>
+<div class="tree-indent2"><span class="tree-dir">shared/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#aaa">← Login, Profile</span></div>
+<div class="tree-indent"><span class="tree-dir">components/</span></div>
+<div class="tree-indent2"><span class="tree-dir">ui/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#aaa">← Button, Modal, Table…</span></div>
+<div class="tree-indent2"><span class="tree-dir">layout/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#aaa">← Sidebar, Navbar</span></div>
+<div class="tree-indent2"><span class="tree-dir">attendance/ &nbsp;</span><span style="color:#aaa">← CheckIn, Timer</span></div>
+<div class="tree-indent2"><span class="tree-dir">charts/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#aaa">← Recharts wrappers</span></div>
+<div class="tree-indent"><span class="tree-dir">routes/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#aaa">← Route guards</span></div>
+<div class="tree-indent2"><span class="tree-accent">PrivateRoute.jsx</span></div>
+<div class="tree-indent2"><span class="tree-accent">RoleRoute.jsx</span></div>
+<div class="tree-indent"><span class="tree-dir">utils/</span></div>
+<div class="tree-indent"><span class="tree-accent">App.jsx</span></div>
+<div class="tree-indent"><span class="tree-file">main.jsx</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DATABASE MODELS -->
+  <section class="section">
+    <div class="sec-eyebrow">Prisma Schema — MySQL Tables</div>
+    <h2 class="sec-title">Database Models &amp; Enums</h2>
+
+    <!-- ENUMS -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;">
+      <div class="enum-box">
+        <div class="enum-title">enum Role</div>
+        <div class="enum-vals">
+          <span class="enum-val">ADMIN</span>
+          <span class="enum-val">MANAGER</span>
+          <span class="enum-val">EMPLOYEE</span>
+        </div>
+      </div>
+      <div class="enum-box">
+        <div class="enum-title">enum AttendanceStatus</div>
+        <div class="enum-vals">
+          <span class="enum-val">PRESENT</span>
+          <span class="enum-val">ABSENT</span>
+          <span class="enum-val">HALF_DAY</span>
+          <span class="enum-val">LEAVE</span>
+          <span class="enum-val">WFH</span>
+        </div>
+      </div>
+      <div class="enum-box">
+        <div class="enum-title">enum LeaveType &amp; LeaveStatus</div>
+        <div class="enum-vals">
+          <span class="enum-val">CASUAL</span>
+          <span class="enum-val">SICK</span>
+          <span class="enum-val">HALF_DAY</span>
+          <span class="enum-val">EARLY_LEAVE</span>
+          <span class="enum-val">WFH</span>
+          <span class="enum-val">FIELD_VISIT</span>
+          <span class="enum-val">PENDING</span>
+          <span class="enum-val">APPROVED</span>
+          <span class="enum-val">REJECTED</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="model-grid">
+      <div>
+        <div class="model-card">
+          <div class="model-hdr">
+            <span class="model-name">users</span>
+            <span class="model-note">All roles share this table</span>
+          </div>
+          <div class="model-fields">
+            <div class="field-row"><span class="fn fn-pk">id</span><span class="ft">INT</span><span class="fd">Auto-increment <span class="pk-badge">PK</span></span></div>
+            <div class="field-row"><span class="fn">name</span><span class="ft">VARCHAR(100)</span><span class="fd">Full name <span class="req">req</span></span></div>
+            <div class="field-row"><span class="fn">email</span><span class="ft">VARCHAR(150)</span><span class="fd">Unique index <span class="req">req</span> <span class="uniq-badge">UNIQUE</span></span></div>
+            <div class="field-row"><span class="fn">password</span><span class="ft">VARCHAR(255)</span><span class="fd">bcrypt hash, excluded from selects <span class="req">req</span></span></div>
+            <div class="field-row"><span class="fn">role</span><span class="ft">ENUM(Role)</span><span class="fd">Default: EMPLOYEE</span></div>
+            <div class="field-row"><span class="fn">employee_id</span><span class="ft">VARCHAR(20)</span><span class="fd">HR identifier <span class="uniq-badge">UNIQUE</span> <span class="opt">opt</span></span></div>
+            <div class="field-row fk-row"><span class="fn fn-fk">department_id</span><span class="ft">INT</span><span class="fd">→ departments.id <span class="fk-badge">FK</span> <span class="opt">opt</span></span></div>
+            <div class="field-row fk-row"><span class="fn fn-fk">manager_id</span><span class="ft">INT</span><span class="fd">→ users.id (self-ref) <span class="fk-badge">FK</span> <span class="opt">opt</span></span></div>
+            <div class="field-row"><span class="fn">phone</span><span class="ft">VARCHAR(20)</span><span class="fd">Contact number <span class="opt">opt</span></span></div>
+            <div class="field-row"><span class="fn">avatar</span><span class="ft">VARCHAR(500)</span><span class="fd">Profile photo URL <span class="opt">opt</span></span></div>
+            <div class="field-row"><span class="fn">is_active</span><span class="ft">BOOLEAN</span><span class="fd">Soft-delete flag, default true</span></div>
+            <div class="field-row"><span class="fn">failed_logins</span><span class="ft">INT</span><span class="fd">Login attempt counter, default 0</span></div>
+            <div class="field-row"><span class="fn">lock_until</span><span class="ft">DATETIME</span><span class="fd">Account lock expiry <span class="opt">opt</span></span></div>
+            <div class="field-row"><span class="fn">last_login</span><span class="ft">DATETIME</span><span class="fd">Last successful login <span class="opt">opt</span></span></div>
+            <div class="field-row"><span class="fn">refresh_token</span><span class="ft">TEXT</span><span class="fd">Hashed refresh token <span class="opt">opt</span></span></div>
+            <div class="field-row"><span class="fn">created_at</span><span class="ft">DATETIME</span><span class="fd">@default(now())</span></div>
+            <div class="field-row"><span class="fn">updated_at</span><span class="ft">DATETIME</span><span class="fd">@updatedAt — auto</span></div>
+          </div>
+        </div>
+        <div class="model-card">
+          <div class="model-hdr">
+            <span class="model-name">departments</span>
+            <span class="model-note">Org structure</span>
+          </div>
+          <div class="model-fields">
+            <div class="field-row"><span class="fn fn-pk">id</span><span class="ft">INT</span><span class="fd">Auto-increment <span class="pk-badge">PK</span></span></div>
+            <div class="field-row"><span class="fn">name</span><span class="ft">VARCHAR(100)</span><span class="fd">Unique department name <span class="req">req</span> <span class="uniq-badge">UNIQUE</span></span></div>
+            <div class="field-row"><span class="fn">description</span><span class="ft">TEXT</span><span class="fd">Optional description <span class="opt">opt</span></span></div>
+            <div class="field-row fk-row"><span class="fn fn-fk">head_id</span><span class="ft">INT</span><span class="fd">→ users.id <span class="fk-badge">FK</span> <span class="opt">opt</span></span></div>
+            <div class="field-row"><span class="fn">is_active</span><span class="ft">BOOLEAN</span><span class="fd">Soft-delete flag, default true</span></div>
+            <div class="field-row"><span class="fn">created_at</span><span class="ft">DATETIME</span><span class="fd">@default(now())</span></div>
+            <div class="field-row"><span class="fn">updated_at</span><span class="ft">DATETIME</span><span class="fd">@updatedAt</span></div>
+          </div>
+        </div>
+        <div class="model-card">
+          <div class="model-hdr">
+            <span class="model-name">leave_balances</span>
+            <span class="model-note">Per employee per year — @@unique([employee_id, year])</span>
+          </div>
+          <div class="model-fields">
+            <div class="field-row"><span class="fn fn-pk">id</span><span class="ft">INT</span><span class="fd">Auto-increment <span class="pk-badge">PK</span></span></div>
+            <div class="field-row fk-row"><span class="fn fn-fk">employee_id</span><span class="ft">INT</span><span class="fd">→ users.id <span class="fk-badge">FK</span> <span class="req">req</span></span></div>
+            <div class="field-row"><span class="fn">year</span><span class="ft">INT</span><span class="fd">e.g. 2025 <span class="req">req</span></span></div>
+            <div class="field-row"><span class="fn">casual_total</span><span class="ft">INT</span><span class="fd">Default: 12</span></div>
+            <div class="field-row"><span class="fn">casual_used</span><span class="ft">INT</span><span class="fd">Default: 0</span></div>
+            <div class="field-row"><span class="fn">sick_total</span><span class="ft">INT</span><span class="fd">Default: 10</span></div>
+            <div class="field-row"><span class="fn">sick_used</span><span class="ft">INT</span><span class="fd">Default: 0</span></div>
+            <div class="field-row"><span class="fn">half_day_total</span><span class="ft">INT</span><span class="fd">Default: 6</span></div>
+            <div class="field-row"><span class="fn">half_day_used</span><span class="ft">INT</span><span class="fd">Default: 0</span></div>
+            <div class="field-row"><span class="fn">wfh_total</span><span class="ft">INT</span><span class="fd">Default: 24</span></div>
+            <div class="field-row"><span class="fn">wfh_used</span><span class="ft">INT</span><span class="fd">Default: 0</span></div>
+            <div class="field-row"><span class="fn">created_at</span><span class="ft">DATETIME</span><span class="fd">@default(now())</span></div>
+            <div class="field-row"><span class="fn">updated_at</span><span class="ft">DATETIME</span><span class="fd">@updatedAt</span></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="model-card">
+          <div class="model-hdr">
+            <span class="model-name">attendances</span>
+            <span class="model-note">@@unique([employee_id, date]) — one row per day</span>
+          </div>
+          <div class="model-fields">
+            <div class="field-row"><span class="fn fn-pk">id</span><span class="ft">INT</span><span class="fd">Auto-increment <span class="pk-badge">PK</span></span></div>
+            <div class="field-row fk-row"><span class="fn fn-fk">employee_id</span><span class="ft">INT</span><span class="fd">→ users.id <span class="fk-badge">FK</span> <span class="req">req</span></span></div>
+            <div class="field-row"><span class="fn">date</span><span class="ft">DATE</span><span class="fd">YYYY-MM-DD, indexed <span class="req">req</span></span></div>
+            <div class="field-row"><span class="fn">check_in_time</span><span class="ft">DATETIME</span><span class="fd">ISO timestamp of check-in <span class="opt">opt</span></span></div>
+            <div class="field-row"><span class="fn">check_in_lat</span><span class="ft">DECIMAL(10,8)</span><span class="fd">Latitude at check-in <span class="opt">opt</span></span></div>
+            <div class="field-row"><span class="fn">check_in_lng</span><span class="ft">DECIMAL(11,8)</span><span class="fd">Longitude at check-in <span class="opt">opt</span></span></div>
+            <div class="field-row"><span class="fn">check_in_address</span><span class="ft">VARCHAR(300)</span><span class="fd">Reverse-geocoded address <span class="opt">opt</span></span></div>
+            <div class="field-row"><span class="fn">check_out_time</span><span class="ft">DATETIME</span><span class="fd">ISO timestamp of check-out <span class="opt">opt</span></span></div>
+            <div class="field-row"><span class="fn">check_out_lat</span><span class="ft">DECIMAL(10,8)</span><span class="fd">Latitude at check-out <span class="opt">opt</span></span></div>
+            <div class="field-row"><span class="fn">check_out_lng</span><span class="ft">DECIMAL(11,8)</span><span class="fd">Longitude at check-out <span class="opt">opt</span></span></div>
+            <div class="field-row"><span class="fn">check_out_address</span><span class="ft">VARCHAR(300)</span><span class="fd">Reverse-geocoded address <span class="opt">opt</span></span></div>
+            <div class="field-row"><span class="fn">working_hours</span><span class="ft">DECIMAL(5,2)</span><span class="fd">Computed on checkout, e.g. 8.50 <span class="opt">opt</span></span></div>
+            <div class="field-row"><span class="fn">status</span><span class="ft">ENUM</span><span class="fd">AttendanceStatus, default PRESENT</span></div>
+            <div class="field-row"><span class="fn">note</span><span class="ft">TEXT</span><span class="fd">Admin/manager note <span class="opt">opt</span></span></div>
+            <div class="field-row"><span class="fn">created_at</span><span class="ft">DATETIME</span><span class="fd">@default(now())</span></div>
+            <div class="field-row"><span class="fn">updated_at</span><span class="ft">DATETIME</span><span class="fd">@updatedAt</span></div>
+          </div>
+        </div>
+        <div class="model-card">
+          <div class="model-hdr">
+            <span class="model-name">leaves</span>
+            <span class="model-note">Leave requests &amp; approvals</span>
+          </div>
+          <div class="model-fields">
+            <div class="field-row"><span class="fn fn-pk">id</span><span class="ft">INT</span><span class="fd">Auto-increment <span class="pk-badge">PK</span></span></div>
+            <div class="field-row fk-row"><span class="fn fn-fk">employee_id</span><span class="ft">INT</span><span class="fd">→ users.id <span class="fk-badge">FK</span> <span class="req">req</span></span></div>
+            <div class="field-row"><span class="fn">type</span><span class="ft">ENUM(LeaveType)</span><span class="fd">casual / sick / half_day / early_leave / wfh / field_visit</span></div>
+            <div class="field-row"><span class="fn">start_date</span><span class="ft">DATE</span><span class="fd">Start of leave period <span class="req">req</span></span></div>
+            <div class="field-row"><span class="fn">end_date</span><span class="ft">DATE</span><span class="fd">End of leave period <span class="req">req</span></span></div>
+            <div class="field-row"><span class="fn">duration</span><span class="ft">DECIMAL(4,1)</span><span class="fd">Days calculated on create</span></div>
+            <div class="field-row"><span class="fn">reason</span><span class="ft">TEXT</span><span class="fd">Employee-provided reason <span class="req">req</span></span></div>
+            <div class="field-row"><span class="fn">status</span><span class="ft">ENUM(LeaveStatus)</span><span class="fd">Default: PENDING</span></div>
+            <div class="field-row fk-row"><span class="fn fn-fk">reviewed_by_id</span><span class="ft">INT</span><span class="fd">→ users.id (manager/admin) <span class="fk-badge">FK</span> <span class="opt">opt</span></span></div>
+            <div class="field-row"><span class="fn">reviewed_at</span><span class="ft">DATETIME</span><span class="fd">Approval/rejection timestamp <span class="opt">opt</span></span></div>
+            <div class="field-row"><span class="fn">comments</span><span class="ft">TEXT</span><span class="fd">Reviewer feedback <span class="opt">opt</span></span></div>
+            <div class="field-row"><span class="fn">created_at</span><span class="ft">DATETIME</span><span class="fd">@default(now())</span></div>
+            <div class="field-row"><span class="fn">updated_at</span><span class="ft">DATETIME</span><span class="fd">@updatedAt</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- API ROUTES -->
+  <section class="section">
+    <div class="sec-eyebrow">REST API — Base URL: /api/v1</div>
+    <h2 class="sec-title">API Endpoints</h2>
+
+    <div class="route-section">
+      <div class="route-section-title">Authentication</div>
+      <div class="route-rows">
+        <div class="rr"><span class="rm rm-post">POST</span><span class="rp">/auth/login</span><span class="rd">Issue access + refresh tokens, set httpOnly cookie</span><span class="ra ra-all">All</span></div>
+        <div class="rr"><span class="rm rm-post">POST</span><span class="rp">/auth/logout</span><span class="rd">Revoke refresh token, clear cookie</span><span class="ra ra-all">Auth</span></div>
+        <div class="rr"><span class="rm rm-post">POST</span><span class="rp">/auth/refresh</span><span class="rd">Rotate refresh token, issue new access token</span><span class="ra ra-all">Cookie</span></div>
+        <div class="rr"><span class="rm rm-get">GET</span><span class="rp">/auth/me</span><span class="rd">Fetch current user's profile &amp; role</span><span class="ra ra-all">Auth</span></div>
+      </div>
+    </div>
+
+    <div class="route-section">
+      <div class="route-section-title">Users &amp; Employee Management</div>
+      <div class="route-rows">
+        <div class="rr"><span class="rm rm-get">GET</span><span class="rp">/users</span><span class="rd">List all employees (paginated, filterable by dept/status)</span><span class="ra ra-admin">Admin</span></div>
+        <div class="rr"><span class="rm rm-post">POST</span><span class="rp">/users</span><span class="rd">Create a new user with role, dept, password</span><span class="ra ra-admin">Admin</span></div>
+        <div class="rr"><span class="rm rm-get">GET</span><span class="rp">/users/:id</span><span class="rd">Fetch single user profile</span><span class="ra ra-admin">Admin</span></div>
+        <div class="rr"><span class="rm rm-patch">PATCH</span><span class="rp">/users/:id</span><span class="rd">Update profile fields, role, or department</span><span class="ra ra-admin">Admin</span></div>
+        <div class="rr"><span class="rm rm-del">DELETE</span><span class="rp">/users/:id</span><span class="rd">Soft-delete (sets is_active: false)</span><span class="ra ra-admin">Admin</span></div>
+        <div class="rr"><span class="rm rm-patch">PATCH</span><span class="rp">/users/:id/assign-manager</span><span class="rd">Set manager_id for an employee</span><span class="ra ra-admin">Admin</span></div>
+        <div class="rr"><span class="rm rm-get">GET</span><span class="rp">/users/team</span><span class="rd">Manager: list users WHERE manager_id = req.user.id</span><span class="ra ra-manager">Manager</span></div>
+        <div class="rr"><span class="rm rm-patch">PATCH</span><span class="rp">/users/me/profile</span><span class="rd">Employee updates own name, phone, avatar</span><span class="ra ra-employee">Any</span></div>
+        <div class="rr"><span class="rm rm-patch">PATCH</span><span class="rp">/users/me/password</span><span class="rd">Change own password (requires current password)</span><span class="ra ra-employee">Any</span></div>
+      </div>
+    </div>
+
+    <div class="route-section">
+      <div class="route-section-title">Departments</div>
+      <div class="route-rows">
+        <div class="rr"><span class="rm rm-get">GET</span><span class="rp">/departments</span><span class="rd">List all active departments</span><span class="ra ra-admin">Admin</span></div>
+        <div class="rr"><span class="rm rm-post">POST</span><span class="rp">/departments</span><span class="rd">Create department with name and optional head_id</span><span class="ra ra-admin">Admin</span></div>
+        <div class="rr"><span class="rm rm-patch">PATCH</span><span class="rp">/departments/:id</span><span class="rd">Update name, description, or head_id</span><span class="ra ra-admin">Admin</span></div>
+        <div class="rr"><span class="rm rm-del">DELETE</span><span class="rp">/departments/:id</span><span class="rd">Soft-delete department</span><span class="ra ra-admin">Admin</span></div>
+      </div>
+    </div>
+
+    <div class="route-section">
+      <div class="route-section-title">Attendance</div>
+      <div class="route-rows">
+        <div class="rr"><span class="rm rm-post">POST</span><span class="rp">/attendance/checkin</span><span class="rd">Record check-in with lat/lng — DB UNIQUE constraint prevents double check-in</span><span class="ra ra-employee">Any</span></div>
+        <div class="rr"><span class="rm rm-post">POST</span><span class="rp">/attendance/checkout</span><span class="rd">Record check-out, compute working_hours</span><span class="ra ra-employee">Any</span></div>
+        <div class="rr"><span class="rm rm-get">GET</span><span class="rp">/attendance/today</span><span class="rd">Today's row for current user (used to resume live timer)</span><span class="ra ra-employee">Any</span></div>
+        <div class="rr"><span class="rm rm-get">GET</span><span class="rp">/attendance/me</span><span class="rd">Own attendance history (paginated, date-range filter)</span><span class="ra ra-employee">Any</span></div>
+        <div class="rr"><span class="rm rm-get">GET</span><span class="rp">/attendance/team</span><span class="rd">Team attendance — WHERE employee.manager_id = req.user.id</span><span class="ra ra-manager">Manager</span></div>
+        <div class="rr"><span class="rm rm-get">GET</span><span class="rp">/attendance/all</span><span class="rd">All org attendance (paginated, filter by dept/date/employee)</span><span class="ra ra-admin">Admin</span></div>
+        <div class="rr"><span class="rm rm-patch">PATCH</span><span class="rp">/attendance/:id</span><span class="rd">Admin correction of attendance record</span><span class="ra ra-admin">Admin</span></div>
+      </div>
+    </div>
+
+    <div class="route-section">
+      <div class="route-section-title">Leave Management</div>
+      <div class="route-rows">
+        <div class="rr"><span class="rm rm-post">POST</span><span class="rp">/leaves</span><span class="rd">Apply for leave — validates balance and date conflicts via Prisma query</span><span class="ra ra-employee">Any</span></div>
+        <div class="rr"><span class="rm rm-get">GET</span><span class="rp">/leaves/me</span><span class="rd">Own leave request history with status</span><span class="ra ra-employee">Any</span></div>
+        <div class="rr"><span class="rm rm-get">GET</span><span class="rp">/leaves/balance</span><span class="rd">Own remaining leave balance by type from leave_balances</span><span class="ra ra-employee">Any</span></div>
+        <div class="rr"><span class="rm rm-del">DELETE</span><span class="rp">/leaves/:id</span><span class="rd">Cancel own PENDING leave request</span><span class="ra ra-employee">Any</span></div>
+        <div class="rr"><span class="rm rm-get">GET</span><span class="rp">/leaves/team</span><span class="rd">Leave requests from employees WHERE manager_id = req.user.id</span><span class="ra ra-manager">Manager</span></div>
+        <div class="rr"><span class="rm rm-patch">PATCH</span><span class="rp">/leaves/:id/approve</span><span class="rd">Approve — runs Prisma $transaction (leave + attendance rows + balance)</span><span class="ra ra-manager">Mgr+Admin</span></div>
+        <div class="rr"><span class="rm rm-patch">PATCH</span><span class="rp">/leaves/:id/reject</span><span class="rd">Reject leave with required comment</span><span class="ra ra-manager">Mgr+Admin</span></div>
+        <div class="rr"><span class="rm rm-get">GET</span><span class="rp">/leaves/all</span><span class="rd">All org leave requests (filterable)</span><span class="ra ra-admin">Admin</span></div>
+        <div class="rr"><span class="rm rm-patch">PATCH</span><span class="rp">/leaves/balance/:userId</span><span class="rd">Manually adjust leave_balances row for employee</span><span class="ra ra-admin">Admin</span></div>
+      </div>
+    </div>
+
+    <div class="route-section">
+      <div class="route-section-title">Reports &amp; Analytics</div>
+      <div class="route-rows">
+        <div class="rr"><span class="rm rm-get">GET</span><span class="rp">/reports/summary</span><span class="rd">Today's org stats via SQL COUNT GROUP BY status</span><span class="ra ra-admin">Admin</span></div>
+        <div class="rr"><span class="rm rm-get">GET</span><span class="rp">/reports/attendance</span><span class="rd">Attendance summary with date-range and dept JOIN filter</span><span class="ra ra-admin">Admin</span></div>
+        <div class="rr"><span class="rm rm-get">GET</span><span class="rp">/reports/leave-summary</span><span class="rd">Leave usage aggregated by type and department via Prisma groupBy</span><span class="ra ra-admin">Admin</span></div>
+        <div class="rr"><span class="rm rm-get">GET</span><span class="rp">/reports/employee/:id</span><span class="rd">Individual employee full attendance &amp; leave report with JOINs</span><span class="ra ra-admin">Admin</span></div>
+        <div class="rr"><span class="rm rm-get">GET</span><span class="rp">/reports/export</span><span class="rd">CSV export — query params: type, dateFrom, dateTo, dept</span><span class="ra ra-admin">Admin</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECURITY -->
+  <section class="section">
+    <div class="sec-eyebrow">Defense in Depth</div>
+    <h2 class="sec-title">Security Architecture</h2>
+    <div class="sec-grid">
+      <div class="sec-item">
+        <div class="sec-item-title">JWT + Refresh Token Rotation</div>
+        <div class="sec-item-body">Access tokens expire in <strong>15 minutes</strong>. Refresh tokens (7 days) live in an <code>httpOnly; Secure; SameSite=Strict</code> cookie — never in localStorage. On each refresh, the old token is revoked and a new one issued.</div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-item-title">Password Hashing</div>
+        <div class="sec-item-body"><code>bcryptjs</code> with salt rounds of <strong>12</strong>. Passwords are excluded from all Prisma selects via <code>select: { password: false }</code>. Password change requires providing the current password first.</div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-item-title">SQL Injection Prevention via Prisma</div>
+        <div class="sec-item-body">Prisma uses <strong>fully parameterized queries</strong> — no raw string interpolation. User input never touches SQL directly. For the rare raw query (<code>prisma.$queryRaw</code>), Prisma's <code>Prisma.sql</code> template literal enforces parameterization.</div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-item-title">Account Lockout</div>
+        <div class="sec-item-body">After <strong>5 consecutive failed logins</strong>, the account is locked for 30 minutes via <code>lock_until</code> column. <code>failed_logins</code> counter resets on success. Admins can unlock accounts manually via PATCH.</div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-item-title">Rate Limiting</div>
+        <div class="sec-item-body">Login endpoint: <strong>5 requests / 15 min</strong> per IP. General API: <strong>100 requests / 15 min</strong> per authenticated user. Remaining quota communicated via response headers. Uses <code>express-rate-limit</code>.</div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-item-title">HTTP Security Headers</div>
+        <div class="sec-item-body"><code>Helmet.js</code> sets <code>Content-Security-Policy</code>, <code>X-Frame-Options: DENY</code>, <code>X-Content-Type-Options: nosniff</code>, <code>Strict-Transport-Security</code>, and removes <code>X-Powered-By</code>.</div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-item-title">RBAC Middleware + Manager Scope</div>
+        <div class="sec-item-body">Every protected route chains <code>authenticate</code> (JWT verify) then <code>authorize(...roles)</code> (role check). Manager endpoints also run a <strong>scope guard</strong>: the Prisma query adds <code>WHERE manager_id = req.user.id</code> — a crafted request for another team's data returns 403.</div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-item-title">Input Validation</div>
+        <div class="sec-item-body">Every POST/PATCH body is validated against a <strong>Joi schema</strong> before reaching the controller. Validation failures return a structured 400 with field-level messages. No unvalidated data reaches Prisma.</div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-item-title">CORS Configuration</div>
+        <div class="sec-item-body">CORS is configured with an explicit <strong>whitelist of allowed origins</strong> (no wildcard in production). Credentials mode is enabled only for the frontend origin. Preflight responses are cached via <code>max-age</code>.</div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-item-title">Audit Logging</div>
+        <div class="sec-item-body">All <strong>Create, Update, Delete</strong> operations are logged with Winston: actor userId, role, endpoint, payload shape (not values), and timestamp. Logs persist to rotating files for compliance review.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FRONTEND PAGES -->
+  <section class="section">
+    <div class="sec-eyebrow">React Pages</div>
+    <h2 class="sec-title">Frontend Pages by Role</h2>
+    <div class="pages-grid">
+      <div class="pages-card">
+        <div class="pages-hdr phdr-admin">Admin Portal</div>
+        <div class="pages-list">
+          <div class="page-item">
+            <span class="page-route">/admin/dashboard</span>
+            <span class="page-name">Overview Dashboard</span>
+            <span class="page-desc">Org stats, today's summary, department charts, quick actions</span>
+          </div>
+          <div class="page-item">
+            <span class="page-route">/admin/employees</span>
+            <span class="page-name">Employee Management</span>
+            <span class="page-desc">Create, edit, deactivate, assign managers, bulk actions</span>
+          </div>
+          <div class="page-item">
+            <span class="page-route">/admin/departments</span>
+            <span class="page-name">Department Management</span>
+            <span class="page-desc">CRUD for departments, assign dept head</span>
+          </div>
+          <div class="page-item">
+            <span class="page-route">/admin/attendance</span>
+            <span class="page-name">Attendance Records</span>
+            <span class="page-desc">Calendar + table view, filter by date/dept/employee, corrections</span>
+          </div>
+          <div class="page-item">
+            <span class="page-route">/admin/leaves</span>
+            <span class="page-name">Leave Management</span>
+            <span class="page-desc">All leave requests, approve/reject, adjust balances</span>
+          </div>
+          <div class="page-item">
+            <span class="page-route">/admin/reports</span>
+            <span class="page-name">Reports &amp; Analytics</span>
+            <span class="page-desc">Charts (Recharts), date-range filter, CSV export</span>
+          </div>
+        </div>
+      </div>
+      <div class="pages-card">
+        <div class="pages-hdr phdr-manager">Manager Portal</div>
+        <div class="pages-list">
+          <div class="page-item">
+            <span class="page-route">/manager/dashboard</span>
+            <span class="page-name">Team Dashboard</span>
+            <span class="page-desc">Who's in today, pending leaves, team attendance rate</span>
+          </div>
+          <div class="page-item">
+            <span class="page-route">/manager/team</span>
+            <span class="page-name">My Team</span>
+            <span class="page-desc">Employee list with quick-view profile cards</span>
+          </div>
+          <div class="page-item">
+            <span class="page-route">/manager/attendance</span>
+            <span class="page-name">Team Attendance</span>
+            <span class="page-desc">Calendar + table, filter by date/member</span>
+          </div>
+          <div class="page-item">
+            <span class="page-route">/manager/leaves</span>
+            <span class="page-name">Leave Requests</span>
+            <span class="page-desc">Pending + history, approve/reject with comment</span>
+          </div>
+          <div class="page-item">
+            <span class="page-route">/attendance</span>
+            <span class="page-name">Own Attendance</span>
+            <span class="page-desc">Manager also marks own daily attendance</span>
+          </div>
+          <div class="page-item">
+            <span class="page-route">/leaves/apply</span>
+            <span class="page-name">Apply for Leave</span>
+            <span class="page-desc">Manager can apply for own leave too</span>
+          </div>
+        </div>
+      </div>
+      <div class="pages-card">
+        <div class="pages-hdr phdr-employee">Employee Portal</div>
+        <div class="pages-list">
+          <div class="page-item">
+            <span class="page-route">/dashboard</span>
+            <span class="page-name">Personal Dashboard</span>
+            <span class="page-desc">Live check-in timer, today's status, monthly summary</span>
+          </div>
+          <div class="page-item">
+            <span class="page-route">/attendance</span>
+            <span class="page-name">My Attendance</span>
+            <span class="page-desc">Check-in / check-out with geolocation, history calendar</span>
+          </div>
+          <div class="page-item">
+            <span class="page-route">/leaves</span>
+            <span class="page-name">My Leaves</span>
+            <span class="page-desc">Leave history, status badges, remaining balance by type</span>
+          </div>
+          <div class="page-item">
+            <span class="page-route">/leaves/apply</span>
+            <span class="page-name">Apply for Leave</span>
+            <span class="page-desc">Multi-step form: type, date range, reason, live balance check</span>
+          </div>
+          <div class="page-item">
+            <span class="page-route">/profile</span>
+            <span class="page-name">My Profile</span>
+            <span class="page-desc">Edit phone, avatar; change password</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KEY TECHNICAL DECISIONS -->
+  <section class="section">
+    <div class="sec-eyebrow">Engineering Decisions</div>
+    <h2 class="sec-title">Key Technical Decisions</h2>
+
+    <div class="decision">
+      <div class="decision-title">Why Prisma over raw Sequelize for MySQL</div>
+      <div class="decision-body">Prisma's <strong>type-safe query builder</strong> means every field name and relation is checked at build time — a renamed column is a compile error, not a runtime crash. <code>prisma migrate dev</code> generates SQL migration files automatically from schema changes, giving a full version-controlled history of every ALTER TABLE. Sequelize requires more boilerplate for the same coverage. The trade-off: Prisma requires Node 16+ and adds a build step, but that's acceptable for this project.</div>
+    </div>
+
+    <div class="decision">
+      <div class="decision-title">Live Timer — Accurate Across Page Refreshes</div>
+      <div class="decision-body">The timer is <strong>not stored in frontend state alone</strong>. On check-in, the server saves <code>check_in_time</code> (DATETIME) to MySQL. On every page load, the employee dashboard calls <code>GET /attendance/today</code>. If a check-in exists with no check-out, the frontend computes <code>elapsed = Date.now() - new Date(check_in_time)</code> and starts the timer from that point. The displayed seconds update via a <code>setInterval</code> in a custom <code>useTimer</code> hook. No server polling needed.</div>
+    </div>
+
+    <div class="decision">
+      <div class="decision-title">Leave Approval — Prisma $transaction (ACID)</div>
+      <div class="decision-body">When a manager approves a leave, the server runs <code>prisma.$transaction(async (tx) =&gt; { ... })</code>: (1) update <code>leaves.status = APPROVED</code>, (2) create one <code>attendances</code> row per calendar day in the range with <code>status: LEAVE</code>, (3) update <code>leave_balances</code> to increment <code>*_used</code>. All three writes run inside a <strong>MySQL transaction</strong>. If any step throws, MySQL rolls back everything automatically — leave stays PENDING, no attendance rows are created, balance is unchanged.</div>
+    </div>
+
+    <div class="decision">
+      <div class="decision-title">Manager Scope — WHERE clause, not middleware filter</div>
+      <div class="decision-body">The frontend does not render out-of-scope links. The real enforcement is in the Prisma query: <code>prisma.user.findMany({ where: { managerId: req.user.id } })</code>. Even a raw API call with another employee's ID hits a scope guard middleware that queries <code>prisma.user.findFirst({ where: { id: targetId, managerId: req.user.id } })</code> — if it returns null, the response is 403. The WHERE clause is the source of truth, not any UI gate.</div>
+    </div>
+
+    <div class="decision">
+      <div class="decision-title">Axios Token Refresh Interceptor</div>
+      <div class="decision-body">An Axios <strong>response interceptor</strong> catches 401 errors. It calls <code>POST /auth/refresh</code> (using the httpOnly cookie automatically), stores the new access token in memory (not localStorage), and retries the original request. This means the user is never prompted to log in again during a session — token refresh is invisible. Access tokens are stored in a module-level variable, not React state, to survive re-renders.</div>
+    </div>
+
+    <div class="decision">
+      <div class="decision-title">Geolocation — Browser API + Flat SQL Columns</div>
+      <div class="decision-body">The <code>useGeolocation</code> hook calls <code>navigator.geolocation.getCurrentPosition()</code> and wraps it in a Promise. Coordinates are sent with the check-in/check-out body as <code>lat</code> and <code>lng</code>. Unlike MongoDB's embedded object, MySQL stores these as <strong>separate DECIMAL columns</strong> (<code>check_in_lat</code>, <code>check_in_lng</code>) — this makes spatial filtering in SQL straightforward (e.g. <code>WHERE check_in_lat BETWEEN ? AND ?</code>). Leaflet.js renders the pin client-side.</div>
+    </div>
+
+    <div class="decision">
+      <div class="decision-title">Standard API Response Shape</div>
+      <div class="decision-body">Every endpoint returns a consistent envelope: <code>{"success": true, "data": {...}, "message": "..."}</code> on success and <code>{"success": false, "error": "...", "details": [...]}</code> on failure. The global <code>errorHandler.js</code> converts Prisma <code>PrismaClientKnownRequestError</code> (e.g. unique constraint P2002, FK violation P2003) into readable 400/409 responses. Frontend interceptors read <code>response.data.data</code> uniformly.</div>
+    </div>
+  </section>
+
+  <!-- IMPLEMENTATION PHASES -->
+  <section class="section">
+    <div class="sec-eyebrow">Delivery Roadmap</div>
+    <h2 class="sec-title">Implementation Phases</h2>
+    <div class="phases">
+      <div class="phase">
+        <div class="phase-num pn-1">1</div>
+        <div class="phase-body">
+          <div class="phase-header">
+            <span class="phase-name">Foundation — Project Setup, MySQL &amp; Auth</span>
+            <span class="phase-wks">Week 1–2</span>
+          </div>
+          <div class="phase-tasks">
+            <div class="pt">Initialize Node/Express server with MVC structure, Winston logger, dotenv</div>
+            <div class="pt">Install Prisma, run <code>prisma init</code>, configure <code>DATABASE_URL</code> for MySQL in <code>.env</code></div>
+            <div class="pt">Write <code>schema.prisma</code> with <code>User</code> and <code>Department</code> models, enums, and relations; run first migration</div>
+            <div class="pt">Build full auth system: login, logout, JWT + refresh token rotation, httpOnly cookie, <code>failed_logins</code> lockout</div>
+            <div class="pt">Write <code>authenticate</code> and <code>authorize</code> RBAC middleware; wire into Express router</div>
+            <div class="pt">Set up Helmet, CORS, rate limiters, global Prisma error handler (P2002 → 409, P2025 → 404)</div>
+            <div class="pt">Initialize React app (Vite), Redux store, Axios instance with interceptors, React Router v6</div>
+            <div class="pt">Build Login page, PrivateRoute, RoleRoute guards; connect to API</div>
+          </div>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-num pn-2">2</div>
+        <div class="phase-body">
+          <div class="phase-header">
+            <span class="phase-name">User &amp; Department Management</span>
+            <span class="phase-wks">Week 3</span>
+          </div>
+          <div class="phase-tasks">
+            <div class="pt">Implement all User CRUD endpoints (Admin): create, list, get, update, soft-delete (is_active), assign-manager</div>
+            <div class="pt">Implement Department CRUD endpoints using Prisma queries</div>
+            <div class="pt">Add Joi validation schemas for all user/department request bodies</div>
+            <div class="pt">Build Admin: Employee list page with search, filters, pagination; Create/Edit employee modal</div>
+            <div class="pt">Build Admin: Department management page with head assignment</div>
+            <div class="pt">Build Profile page (shared): edit name, phone, avatar; change password form with current-password check</div>
+            <div class="pt">Build Sidebar layout with role-based nav links using RoleRoute</div>
+          </div>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-num pn-3">3</div>
+        <div class="phase-body">
+          <div class="phase-header">
+            <span class="phase-name">Attendance System — Check-in, Timer, Geolocation</span>
+            <span class="phase-wks">Week 4–5</span>
+          </div>
+          <div class="phase-tasks">
+            <div class="pt">Add <code>Attendance</code> model to <code>schema.prisma</code>; run migration to create <code>attendances</code> table with @@unique constraint</div>
+            <div class="pt">Implement check-in and check-out endpoints — Prisma unique constraint P2002 handles double check-in gracefully</div>
+            <div class="pt">Implement attendance history endpoints for employee, manager (scoped WHERE), and admin (full with JOINs)</div>
+            <div class="pt">Set up Socket.io server; emit <code>attendance:checkin</code> events to admin room on check-in</div>
+            <div class="pt">Build <code>useGeolocation</code> hook with permission handling and error states</div>
+            <div class="pt">Build <code>useTimer</code> hook — computes elapsed from <code>check_in_time</code> DB timestamp, survives page refresh</div>
+            <div class="pt">Build Employee Attendance page: check-in/out button, live timer, location status indicator</div>
+            <div class="pt">Build attendance history calendar view and Manager team attendance table with date filter</div>
+          </div>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-num pn-4">4</div>
+        <div class="phase-body">
+          <div class="phase-header">
+            <span class="phase-name">Leave Management System</span>
+            <span class="phase-wks">Week 6</span>
+          </div>
+          <div class="phase-tasks">
+            <div class="pt">Add <code>Leave</code> and <code>LeaveBalance</code> models to <code>schema.prisma</code>; run migration; seed initial balances via <code>seed.js</code></div>
+            <div class="pt">Implement leave application endpoint — check balance and date conflicts with Prisma queries before inserting</div>
+            <div class="pt">Implement approve endpoint using <code>prisma.$transaction</code> (leave update + attendance createMany + balance update atomically)</div>
+            <div class="pt">Build Employee: Leave application multi-step form with live balance preview (React Query fetch)</div>
+            <div class="pt">Build Employee: My leaves page with status badges and cancel button for PENDING leaves</div>
+            <div class="pt">Build Manager: Leave approval queue with approve/reject modal and required comment field</div>
+            <div class="pt">Build Admin: All-leave view with manual balance adjustment per employee</div>
+            <div class="pt">Wire Socket.io: emit <code>leave:updated</code> to employee room on approval/rejection</div>
+          </div>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-num pn-5">5</div>
+        <div class="phase-body">
+          <div class="phase-header">
+            <span class="phase-name">Dashboards &amp; Reports</span>
+            <span class="phase-wks">Week 7</span>
+          </div>
+          <div class="phase-tasks">
+            <div class="pt">Implement report endpoints using Prisma <code>groupBy</code> and <code>$queryRaw</code> for complex SQL GROUP BY / JOIN aggregations</div>
+            <div class="pt">Build Admin Dashboard: stat cards (total/present/absent/on-leave via COUNT queries), Recharts weekly area chart</div>
+            <div class="pt">Build Admin Reports page: attendance summary table, leave breakdown chart, department comparison, CSV export using fast-csv</div>
+            <div class="pt">Build Manager Dashboard: team present-today list, pending leave count, team attendance rate sparkline</div>
+            <div class="pt">Build Employee Dashboard: personal attendance streak, monthly stats, leave balance summary cards</div>
+            <div class="pt">Add date-range picker and department filter components; reuse across all report views</div>
+          </div>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-num pn-6">6</div>
+        <div class="phase-body">
+          <div class="phase-header">
+            <span class="phase-name">Hardening, Testing &amp; Deployment</span>
+            <span class="phase-wks">Week 8</span>
+          </div>
+          <div class="phase-tasks">
+            <div class="pt">Security audit: re-test all RBAC rules, scope leaks, Prisma parameterization on raw queries, header configuration</div>
+            <div class="pt">Write integration tests for all critical flows: auth, check-in uniqueness, leave approval transaction rollback</div>
+            <div class="pt">Add MySQL index review: verify indexes on <code>attendances(employee_id, date)</code>, <code>leaves(employee_id, status)</code>, <code>users(manager_id)</code></div>
+            <div class="pt">Implement proper React error boundaries; finalize loading skeletons and empty states</div>
+            <div class="pt">Add <code>.env.example</code>, Docker Compose for local dev (Node + MySQL 8) with volume persistence</div>
+            <div class="pt">Final UI polish: responsive breakpoints, keyboard navigation, focus states, reduced-motion support</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>

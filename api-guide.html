@@ -1,0 +1,1333 @@
+<title>WorkTrack API — Testing Guide</title>
+<style>
+:root {
+  --bg: #090e1a;
+  --surface: #111827;
+  --surface2: #1a2235;
+  --border: #1d2d47;
+  --accent: #34d399;
+  --text: #b8c9df;
+  --heading: #e4eeff;
+  --muted: #4d6680;
+  --get: #34d399;
+  --post: #60a5fa;
+  --patch: #fbbf24;
+  --del: #f87171;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: -apple-system, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13.5px;
+  line-height: 1.6;
+  display: flex;
+  min-height: 100vh;
+}
+code, pre, .mono { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', 'Courier New', monospace; }
+
+/* ─── SIDEBAR ─────────────────────────────────── */
+.sidebar {
+  width: 244px;
+  min-width: 244px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding-bottom: 40px;
+  flex-shrink: 0;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.sb-brand {
+  padding: 18px 16px 15px;
+  border-bottom: 1px solid var(--border);
+}
+.sb-brand .app { font-size: 14px; font-weight: 700; color: var(--heading); letter-spacing: -0.02em; }
+.sb-brand .version { font-size: 11px; color: var(--accent); font-family: monospace; margin-top: 2px; }
+.sb-group { padding: 10px 0 2px; }
+.sb-label {
+  padding: 3px 16px 5px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+.sb-link {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 16px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 12px;
+  transition: background 0.1s, color 0.1s;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.sb-link:hover { background: var(--surface2); color: var(--heading); }
+.sb-link:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.sb-path { overflow: hidden; text-overflow: ellipsis; font-family: monospace; font-size: 11.5px; }
+.mb { font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 2px; min-width: 36px; text-align: center; letter-spacing: 0.03em; flex-shrink: 0; }
+.mb-g  { background: rgba(52,211,153,.15); color: var(--get); }
+.mb-p  { background: rgba(96,165,250,.15); color: var(--post); }
+.mb-pa { background: rgba(251,191,36,.15);  color: var(--patch); }
+.mb-d  { background: rgba(248,113,113,.15); color: var(--del); }
+
+/* ─── MAIN ────────────────────────────────────── */
+main { flex: 1; min-width: 0; padding: 40px 44px 80px; }
+.page-head { margin-bottom: 32px; }
+.page-head h1 { font-size: 24px; font-weight: 800; color: var(--heading); margin: 0 0 6px; letter-spacing: -0.03em; text-wrap: balance; }
+.page-head p { color: var(--muted); margin: 0; }
+
+/* SETUP GRID */
+.setup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.setup-card { background: var(--surface); border: 1px solid var(--border); border-radius: 5px; padding: 12px 14px; }
+.setup-card .lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 5px; }
+.setup-card code { font-size: 12px; color: var(--accent); word-break: break-all; display: block; }
+
+/* CREDENTIALS */
+.creds { display: grid; grid-template-columns: repeat(auto-fit, minmax(195px, 1fr)); gap: 10px; margin-bottom: 32px; }
+.cred { background: var(--surface); border: 1px solid var(--border); border-radius: 5px; padding: 12px 14px; display: flex; flex-direction: column; gap: 5px; }
+.rbadge { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; padding: 2px 7px; border-radius: 20px; width: fit-content; }
+.r-admin    { background: rgba(248,113,113,.15); color: var(--del); }
+.r-manager  { background: rgba(251,191,36,.15);  color: var(--patch); }
+.r-employee { background: rgba(52,211,153,.15);  color: var(--get); }
+.r-all      { background: rgba(96,165,250,.15);  color: var(--post); }
+.cred .em { font-family: monospace; font-size: 12px; color: var(--heading); }
+.cred .pw { font-family: monospace; font-size: 12px; color: var(--muted); }
+
+/* FLOW */
+.flow { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 5px; padding: 16px 18px; margin-bottom: 40px; }
+.flow h3 { font-size: 12px; font-weight: 700; color: var(--heading); margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.07em; }
+.flow ol { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.flow li { font-size: 12.5px; }
+.flow li strong { color: var(--heading); }
+.flow code { font-family: monospace; font-size: 11px; background: var(--surface2); padding: 1px 5px; border-radius: 3px; color: var(--accent); }
+
+/* SECTION */
+section { margin-bottom: 48px; scroll-margin-top: 20px; }
+.sec-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.sec-head h2 { font-size: 17px; font-weight: 700; color: var(--heading); margin: 0; text-wrap: balance; }
+.sec-count { font-size: 11px; color: var(--muted); font-family: monospace; }
+
+/* ENDPOINT CARD */
+details.ep { background: var(--surface); border: 1px solid var(--border); border-radius: 5px; margin-bottom: 8px; overflow: hidden; }
+details.ep[open] { border-left-width: 3px; }
+details.ep.ep-get[open]   { border-left-color: var(--get); }
+details.ep.ep-post[open]  { border-left-color: var(--post); }
+details.ep.ep-patch[open] { border-left-color: var(--patch); }
+details.ep.ep-del[open]   { border-left-color: var(--del); }
+details.ep summary { display: flex; align-items: center; gap: 10px; padding: 11px 14px; cursor: pointer; list-style: none; user-select: none; }
+details.ep summary::-webkit-details-marker { display: none; }
+details.ep summary:hover { background: var(--surface2); }
+details.ep[open] summary { border-bottom: 1px solid var(--border); }
+details.ep summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.ep-mthd { font-family: monospace; font-size: 9.5px; font-weight: 700; padding: 2px 6px; border-radius: 3px; min-width: 44px; text-align: center; letter-spacing: 0.04em; flex-shrink: 0; }
+.ep-get  .ep-mthd { background: rgba(52,211,153,.15);  color: var(--get); }
+.ep-post .ep-mthd { background: rgba(96,165,250,.15);  color: var(--post); }
+.ep-patch .ep-mthd{ background: rgba(251,191,36,.15);  color: var(--patch); }
+.ep-del  .ep-mthd { background: rgba(248,113,113,.15); color: var(--del); }
+.ep-path { font-family: monospace; font-size: 12.5px; color: var(--heading); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ep-desc { font-size: 11.5px; color: var(--muted); flex-shrink: 0; }
+.ep-rs { display: flex; gap: 4px; flex-shrink: 0; }
+.ep-r { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 1px 6px; border-radius: 10px; }
+.chv { color: var(--muted); font-size: 10px; flex-shrink: 0; transition: transform 0.15s; }
+details.ep[open] .chv { transform: rotate(90deg); }
+
+/* ENDPOINT BODY */
+.ep-body { padding: 16px 16px 18px; display: flex; flex-direction: column; gap: 14px; }
+.ep-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; }
+.cw { position: relative; }
+pre { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 11px 13px; font-size: 11.5px; line-height: 1.65; overflow-x: auto; margin: 0; color: var(--text); white-space: pre; }
+.cpbtn { position: absolute; top: 6px; right: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 3px; color: var(--muted); font-size: 10px; padding: 2px 7px; cursor: pointer; font-family: inherit; transition: color 0.1s; }
+.cpbtn:hover { color: var(--heading); }
+.cpbtn:focus-visible { outline: 2px solid var(--accent); }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 680px) { .two { grid-template-columns: 1fr; } }
+.note { background: rgba(96,165,250,.06); border: 1px solid rgba(96,165,250,.2); border-radius: 4px; padding: 8px 12px; font-size: 12px; }
+.warn { background: rgba(251,191,36,.06); border: 1px solid rgba(251,191,36,.2); border-radius: 4px; padding: 8px 12px; font-size: 12px; }
+.tip  { background: rgba(52,211,153,.06); border: 1px solid rgba(52,211,153,.2); border-radius: 4px; padding: 8px 12px; font-size: 12px; }
+.ptbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+.ptbl th { text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding: 3px 8px; border-bottom: 1px solid var(--border); }
+.ptbl td { padding: 4px 8px; border-bottom: 1px solid rgba(29,45,71,.5); vertical-align: top; }
+.ptbl td:first-child { font-family: monospace; color: var(--accent); font-size: 11px; }
+.ptbl .req { color: var(--del); font-size: 10px; font-weight: 600; }
+.ptbl .opt { color: var(--muted); font-size: 10px; }
+</style>
+
+<div class="sidebar">
+  <div class="sb-brand">
+    <div class="app">WorkTrack API</div>
+    <div class="version">v1.0 · localhost:5000</div>
+  </div>
+
+  <div class="sb-group">
+    <div class="sb-label">Auth</div>
+    <a class="sb-link" href="#login"><span class="mb mb-p">POST</span><span class="sb-path">/auth/login</span></a>
+    <a class="sb-link" href="#me"><span class="mb mb-g">GET</span><span class="sb-path">/auth/me</span></a>
+    <a class="sb-link" href="#refresh"><span class="mb mb-p">POST</span><span class="sb-path">/auth/refresh</span></a>
+    <a class="sb-link" href="#chgpwd"><span class="mb mb-pa">PATCH</span><span class="sb-path">/auth/me/password</span></a>
+    <a class="sb-link" href="#logout"><span class="mb mb-p">POST</span><span class="sb-path">/auth/logout</span></a>
+  </div>
+
+  <div class="sb-group">
+    <div class="sb-label">Departments</div>
+    <a class="sb-link" href="#dept-list"><span class="mb mb-g">GET</span><span class="sb-path">/departments</span></a>
+    <a class="sb-link" href="#dept-create"><span class="mb mb-p">POST</span><span class="sb-path">/departments</span></a>
+    <a class="sb-link" href="#dept-get"><span class="mb mb-g">GET</span><span class="sb-path">/departments/:id</span></a>
+    <a class="sb-link" href="#dept-update"><span class="mb mb-pa">PATCH</span><span class="sb-path">/departments/:id</span></a>
+    <a class="sb-link" href="#dept-delete"><span class="mb mb-d">DEL</span><span class="sb-path">/departments/:id</span></a>
+  </div>
+
+  <div class="sb-group">
+    <div class="sb-label">Users</div>
+    <a class="sb-link" href="#u-list"><span class="mb mb-g">GET</span><span class="sb-path">/users</span></a>
+    <a class="sb-link" href="#u-create"><span class="mb mb-p">POST</span><span class="sb-path">/users</span></a>
+    <a class="sb-link" href="#u-get"><span class="mb mb-g">GET</span><span class="sb-path">/users/:id</span></a>
+    <a class="sb-link" href="#u-update"><span class="mb mb-pa">PATCH</span><span class="sb-path">/users/:id</span></a>
+    <a class="sb-link" href="#u-delete"><span class="mb mb-d">DEL</span><span class="sb-path">/users/:id</span></a>
+    <a class="sb-link" href="#u-manager"><span class="mb mb-pa">PATCH</span><span class="sb-path">/users/:id/assign-manager</span></a>
+    <a class="sb-link" href="#u-team"><span class="mb mb-g">GET</span><span class="sb-path">/users/my-team</span></a>
+    <a class="sb-link" href="#u-profile"><span class="mb mb-pa">PATCH</span><span class="sb-path">/users/my-profile</span></a>
+    <a class="sb-link" href="#u-bal-get"><span class="mb mb-g">GET</span><span class="sb-path">/users/:id/leave-balance</span></a>
+    <a class="sb-link" href="#u-bal-set"><span class="mb mb-pa">PATCH</span><span class="sb-path">/users/:id/leave-balance</span></a>
+  </div>
+
+  <div class="sb-group">
+    <div class="sb-label">Attendance</div>
+    <a class="sb-link" href="#att-timer"><span class="mb mb-g">GET</span><span class="sb-path">/attendance/live-timer</span></a>
+    <a class="sb-link" href="#att-today"><span class="mb mb-g">GET</span><span class="sb-path">/attendance/today</span></a>
+    <a class="sb-link" href="#att-in"><span class="mb mb-p">POST</span><span class="sb-path">/attendance/check-in</span></a>
+    <a class="sb-link" href="#att-out"><span class="mb mb-p">POST</span><span class="sb-path">/attendance/check-out</span></a>
+    <a class="sb-link" href="#att-my"><span class="mb mb-g">GET</span><span class="sb-path">/attendance/my</span></a>
+    <a class="sb-link" href="#att-team"><span class="mb mb-g">GET</span><span class="sb-path">/attendance/team</span></a>
+    <a class="sb-link" href="#att-all"><span class="mb mb-g">GET</span><span class="sb-path">/attendance</span></a>
+    <a class="sb-link" href="#att-update"><span class="mb mb-pa">PATCH</span><span class="sb-path">/attendance/:id</span></a>
+  </div>
+
+  <div class="sb-group">
+    <div class="sb-label">Leaves</div>
+    <a class="sb-link" href="#lv-balance"><span class="mb mb-g">GET</span><span class="sb-path">/leaves/my-balance</span></a>
+    <a class="sb-link" href="#lv-apply"><span class="mb mb-p">POST</span><span class="sb-path">/leaves</span></a>
+    <a class="sb-link" href="#lv-my"><span class="mb mb-g">GET</span><span class="sb-path">/leaves/my</span></a>
+    <a class="sb-link" href="#lv-pending"><span class="mb mb-g">GET</span><span class="sb-path">/leaves/pending</span></a>
+    <a class="sb-link" href="#lv-get"><span class="mb mb-g">GET</span><span class="sb-path">/leaves/:id</span></a>
+    <a class="sb-link" href="#lv-approve"><span class="mb mb-p">POST</span><span class="sb-path">/leaves/:id/approve</span></a>
+    <a class="sb-link" href="#lv-reject"><span class="mb mb-p">POST</span><span class="sb-path">/leaves/:id/reject</span></a>
+    <a class="sb-link" href="#lv-cancel"><span class="mb mb-d">DEL</span><span class="sb-path">/leaves/:id</span></a>
+    <a class="sb-link" href="#lv-all"><span class="mb mb-g">GET</span><span class="sb-path">/leaves</span></a>
+  </div>
+
+  <div class="sb-group">
+    <div class="sb-label">Reports</div>
+    <a class="sb-link" href="#rpt-dash"><span class="mb mb-g">GET</span><span class="sb-path">/reports/dashboard</span></a>
+    <a class="sb-link" href="#rpt-att"><span class="mb mb-g">GET</span><span class="sb-path">/reports/attendance-summary</span></a>
+    <a class="sb-link" href="#rpt-lv"><span class="mb mb-g">GET</span><span class="sb-path">/reports/leave-summary</span></a>
+    <a class="sb-link" href="#rpt-monthly"><span class="mb mb-g">GET</span><span class="sb-path">/reports/monthly</span></a>
+  </div>
+</div>
+
+<main>
+  <div class="page-head">
+    <h1>API Testing Guide</h1>
+    <p>41 endpoints across 6 modules. Follow the test flow below, or jump to any section.</p>
+  </div>
+
+  <div class="setup-grid">
+    <div class="setup-card">
+      <div class="lbl">Base URL</div>
+      <code>http://localhost:5000/api/v1</code>
+    </div>
+    <div class="setup-card">
+      <div class="lbl">Auth Header</div>
+      <code>Authorization: Bearer {accessToken}</code>
+    </div>
+    <div class="setup-card">
+      <div class="lbl">Content-Type</div>
+      <code>application/json</code>
+    </div>
+    <div class="setup-card">
+      <div class="lbl">Health Check</div>
+      <code>GET http://localhost:5000/health</code>
+    </div>
+  </div>
+
+  <div class="creds">
+    <div class="cred">
+      <span class="rbadge r-admin">Admin</span>
+      <span class="em">admin@company.com</span>
+      <span class="pw">Admin@1234</span>
+    </div>
+    <div class="cred">
+      <span class="rbadge r-manager">Manager</span>
+      <span class="em">manager@company.com</span>
+      <span class="pw">Manager@1234</span>
+    </div>
+    <div class="cred">
+      <span class="rbadge r-employee">Employee</span>
+      <span class="em">employee@company.com</span>
+      <span class="pw">Employee@1234</span>
+    </div>
+  </div>
+
+  <div class="flow">
+    <h3>Recommended test order</h3>
+    <ol>
+      <li><strong>Login as Admin</strong> → copy <code>accessToken</code> from response</li>
+      <li><strong>Create a department</strong> → note the <code>id</code></li>
+      <li><strong>Create a manager user</strong> → assign to department</li>
+      <li><strong>Create an employee user</strong> → assign to department + set managerId</li>
+      <li><strong>Login as Employee</strong> → get new <code>accessToken</code></li>
+      <li><strong>Check-in</strong> (POST /attendance/check-in) → note the response</li>
+      <li><strong>Poll live-timer</strong> (GET /attendance/live-timer) → see elapsedMs grow</li>
+      <li><strong>Check-out</strong> (POST /attendance/check-out)</li>
+      <li><strong>Apply a leave</strong> (POST /leaves) → note leave <code>id</code></li>
+      <li><strong>Login as Manager</strong> → approve the leave</li>
+      <li><strong>Login as Admin</strong> → check reports/dashboard</li>
+    </ol>
+  </div>
+
+  <!-- ═══════════════════════════════════════ AUTH -->
+  <section id="auth">
+    <div class="sec-head">
+      <h2>Auth</h2><span class="sec-count">5 endpoints</span>
+    </div>
+
+    <details class="ep ep-post" id="login">
+      <summary>
+        <span class="ep-mthd">POST</span>
+        <span class="ep-path">/auth/login</span>
+        <span class="ep-desc">Get access + refresh tokens</span>
+        <span class="ep-rs"><span class="ep-r r-all">No Auth</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="warn">Rate-limited: 5 attempts per 15 minutes per IP.</div>
+        <div class="two">
+          <div>
+            <div class="ep-lbl">Request Body</div>
+            <div class="cw">
+              <pre>{
+  "email": "admin@company.com",
+  "password": "Admin@1234"
+}</pre>
+              <button class="cpbtn" onclick="cp(this)">copy</button>
+            </div>
+          </div>
+          <div>
+            <div class="ep-lbl">Response 200</div>
+            <div class="cw">
+              <pre>{
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI...",
+    "user": {
+      "id": 1,
+      "name": "Super Admin",
+      "email": "admin@company.com",
+      "role": "ADMIN"
+    }
+  }
+}</pre>
+              <button class="cpbtn" onclick="cp(this)">copy</button>
+            </div>
+          </div>
+        </div>
+        <div class="tip">Copy <strong>accessToken</strong> — set it as <code>Authorization: Bearer {token}</code> in all subsequent requests. The refreshToken is stored automatically as an httpOnly cookie.</div>
+      </div>
+    </details>
+
+    <details class="ep ep-get" id="me">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/auth/me</span>
+        <span class="ep-desc">Fetch your own profile</span>
+        <span class="ep-rs"><span class="ep-r r-all">All roles</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Headers</div>
+        <div class="cw"><pre>Authorization: Bearer {accessToken}</pre><button class="cpbtn" onclick="cp(this)">copy</button></div>
+        <div class="ep-lbl">Response 200</div>
+        <div class="cw">
+          <pre>{
+  "success": true,
+  "data": {
+    "id": 1, "name": "Super Admin",
+    "email": "admin@company.com",
+    "role": "ADMIN", "employeeId": "EMP001",
+    "phone": null, "avatar": null,
+    "lastLogin": "2026-06-24T06:16:00.000Z",
+    "department": null,
+    "manager": null
+  }
+}</pre>
+          <button class="cpbtn" onclick="cp(this)">copy</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="ep ep-post" id="refresh">
+      <summary>
+        <span class="ep-mthd">POST</span>
+        <span class="ep-path">/auth/refresh</span>
+        <span class="ep-desc">Rotate tokens — no body needed</span>
+        <span class="ep-rs"><span class="ep-r r-all">Cookie</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="note">No body or Authorization header needed. The refreshToken cookie is sent automatically by the browser. In Postman, enable "Send cookies" and the cookie will be attached after login.</div>
+        <div class="ep-lbl">Response 200</div>
+        <div class="cw">
+          <pre>{
+  "success": true,
+  "message": "Token refreshed",
+  "data": { "accessToken": "eyJhbGciOiJIUzI..." }
+}</pre>
+          <button class="cpbtn" onclick="cp(this)">copy</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="ep ep-patch" id="chgpwd">
+      <summary>
+        <span class="ep-mthd">PATCH</span>
+        <span class="ep-path">/auth/me/password</span>
+        <span class="ep-desc">Change your password</span>
+        <span class="ep-rs"><span class="ep-r r-all">All roles</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="two">
+          <div>
+            <div class="ep-lbl">Request Body</div>
+            <div class="cw">
+              <pre>{
+  "currentPassword": "Admin@1234",
+  "newPassword": "Admin@5678"
+}</pre>
+              <button class="cpbtn" onclick="cp(this)">copy</button>
+            </div>
+          </div>
+          <div>
+            <div class="ep-lbl">Validation rules</div>
+            <div class="cw">
+              <pre>newPassword requirements:
+- min 8 characters
+- at least 1 uppercase letter
+- at least 1 lowercase letter
+- at least 1 number</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="ep ep-post" id="logout">
+      <summary>
+        <span class="ep-mthd">POST</span>
+        <span class="ep-path">/auth/logout</span>
+        <span class="ep-desc">Invalidate session</span>
+        <span class="ep-rs"><span class="ep-r r-all">All roles</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Headers</div>
+        <div class="cw"><pre>Authorization: Bearer {accessToken}</pre><button class="cpbtn" onclick="cp(this)">copy</button></div>
+        <div class="note">No body needed. Clears the refresh token in DB and expires the cookie. The access token will expire naturally after 15 minutes.</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ═══════════════════════════════════════ DEPARTMENTS -->
+  <section id="departments">
+    <div class="sec-head">
+      <h2>Departments</h2><span class="sec-count">5 endpoints</span>
+    </div>
+
+    <details class="ep ep-get" id="dept-list">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/departments</span>
+        <span class="ep-desc">List all departments</span>
+        <span class="ep-rs"><span class="ep-r r-all">All roles</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Response 200</div>
+        <div class="cw">
+          <pre>{
+  "success": true,
+  "data": [{
+    "id": 1, "name": "Engineering",
+    "description": "Software Engineering Department",
+    "isActive": true,
+    "head": { "id": 2, "name": "Team Manager", "email": "manager@company.com" },
+    "_count": { "employees": 1 }
+  }]
+}</pre>
+          <button class="cpbtn" onclick="cp(this)">copy</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="ep ep-post" id="dept-create">
+      <summary>
+        <span class="ep-mthd">POST</span>
+        <span class="ep-path">/departments</span>
+        <span class="ep-desc">Create a new department</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="two">
+          <div>
+            <div class="ep-lbl">Request Body</div>
+            <div class="cw">
+              <pre>{
+  "name": "Human Resources",
+  "description": "HR Department",
+  "headId": 2
+}</pre>
+              <button class="cpbtn" onclick="cp(this)">copy</button>
+            </div>
+          </div>
+          <div>
+            <div class="ep-lbl">Fields</div>
+            <table class="ptbl">
+              <tr><th>Field</th><th>Rule</th></tr>
+              <tr><td>name</td><td><span class="req">required</span> 2-100 chars, unique</td></tr>
+              <tr><td>description</td><td><span class="opt">optional</span> max 500</td></tr>
+              <tr><td>headId</td><td><span class="opt">optional</span> user id (int)</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="ep ep-get" id="dept-get">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/departments/:id</span>
+        <span class="ep-desc">Department with full employee list</span>
+        <span class="ep-rs"><span class="ep-r r-all">All roles</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Response 200</div>
+        <div class="cw">
+          <pre>{
+  "success": true,
+  "data": {
+    "id": 1, "name": "Engineering",
+    "head": { "id": 2, "name": "Team Manager" },
+    "employees": [
+      { "id": 3, "name": "John Employee", "role": "EMPLOYEE" }
+    ]
+  }
+}</pre>
+          <button class="cpbtn" onclick="cp(this)">copy</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="ep ep-patch" id="dept-update">
+      <summary>
+        <span class="ep-mthd">PATCH</span>
+        <span class="ep-path">/departments/:id</span>
+        <span class="ep-desc">Update department fields</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Request Body (all optional)</div>
+        <div class="cw">
+          <pre>{
+  "name": "Engineering & Product",
+  "description": "Updated description",
+  "headId": 3,
+  "isActive": true
+}</pre>
+          <button class="cpbtn" onclick="cp(this)">copy</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="ep ep-del" id="dept-delete">
+      <summary>
+        <span class="ep-mthd">DEL</span>
+        <span class="ep-path">/departments/:id</span>
+        <span class="ep-desc">Delete department</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="warn">Returns <strong>400</strong> if the department has active employees. Reassign or deactivate them first.</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ═══════════════════════════════════════ USERS -->
+  <section id="users">
+    <div class="sec-head">
+      <h2>Users</h2><span class="sec-count">10 endpoints</span>
+    </div>
+
+    <details class="ep ep-get" id="u-list">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/users</span>
+        <span class="ep-desc">Paginated user list with filters</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Query Params</div>
+        <table class="ptbl">
+          <tr><th>Param</th><th>Example</th><th>Notes</th></tr>
+          <tr><td>page</td><td>1</td><td><span class="opt">optional</span> default 1</td></tr>
+          <tr><td>limit</td><td>20</td><td><span class="opt">optional</span> default 20</td></tr>
+          <tr><td>role</td><td>EMPLOYEE</td><td><span class="opt">optional</span> ADMIN / MANAGER / EMPLOYEE</td></tr>
+          <tr><td>departmentId</td><td>1</td><td><span class="opt">optional</span></td></tr>
+          <tr><td>search</td><td>john</td><td><span class="opt">optional</span> searches name, email, employeeId</td></tr>
+          <tr><td>isActive</td><td>true</td><td><span class="opt">optional</span></td></tr>
+        </table>
+        <div class="note">Example: <code>GET /users?role=EMPLOYEE&departmentId=1&page=1&limit=10</code></div>
+      </div>
+    </details>
+
+    <details class="ep ep-post" id="u-create">
+      <summary>
+        <span class="ep-mthd">POST</span>
+        <span class="ep-path">/users</span>
+        <span class="ep-desc">Create user + auto-seed leave balance</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="two">
+          <div>
+            <div class="ep-lbl">Request Body</div>
+            <div class="cw">
+              <pre>{
+  "name": "Jane Smith",
+  "email": "jane@company.com",
+  "password": "Jane@1234",
+  "role": "EMPLOYEE",
+  "employeeId": "EMP010",
+  "departmentId": 1,
+  "managerId": 2,
+  "phone": "+91-9876543210"
+}</pre>
+              <button class="cpbtn" onclick="cp(this)">copy</button>
+            </div>
+          </div>
+          <div>
+            <div class="ep-lbl">Fields</div>
+            <table class="ptbl">
+              <tr><th>Field</th><th>Rule</th></tr>
+              <tr><td>name</td><td><span class="req">required</span> 2-100</td></tr>
+              <tr><td>email</td><td><span class="req">required</span> unique</td></tr>
+              <tr><td>password</td><td><span class="req">required</span> uppercase+lowercase+number</td></tr>
+              <tr><td>role</td><td><span class="opt">optional</span> default EMPLOYEE</td></tr>
+              <tr><td>employeeId</td><td><span class="opt">optional</span> unique</td></tr>
+              <tr><td>departmentId</td><td><span class="opt">optional</span></td></tr>
+              <tr><td>managerId</td><td><span class="opt">optional</span></td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="tip">A LeaveBalance row for the current year is created automatically inside a transaction when the user is created.</div>
+      </div>
+    </details>
+
+    <details class="ep ep-get" id="u-get">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/users/:id</span>
+        <span class="ep-desc">User profile + leave balances</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Response 200</div>
+        <div class="cw">
+          <pre>{
+  "success": true,
+  "data": {
+    "id": 3, "name": "John Employee",
+    "email": "employee@company.com",
+    "role": "EMPLOYEE", "employeeId": "EMP003",
+    "department": { "id": 1, "name": "Engineering" },
+    "manager": { "id": 2, "name": "Team Manager" },
+    "leaveBalances": [{
+      "year": 2026,
+      "casualTotal": 12, "casualUsed": 0,
+      "sickTotal": 10,   "sickUsed": 0,
+      "halfDayTotal": 6, "halfDayUsed": 0,
+      "wfhTotal": 24,    "wfhUsed": 0
+    }]
+  }
+}</pre>
+          <button class="cpbtn" onclick="cp(this)">copy</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="ep ep-patch" id="u-update">
+      <summary>
+        <span class="ep-mthd">PATCH</span>
+        <span class="ep-path">/users/:id</span>
+        <span class="ep-desc">Update any user field</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Request Body (all optional)</div>
+        <div class="cw">
+          <pre>{
+  "name": "John Updated",
+  "role": "MANAGER",
+  "departmentId": 2,
+  "managerId": 1,
+  "isActive": true
+}</pre>
+          <button class="cpbtn" onclick="cp(this)">copy</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="ep ep-del" id="u-delete">
+      <summary>
+        <span class="ep-mthd">DEL</span>
+        <span class="ep-path">/users/:id</span>
+        <span class="ep-desc">Soft-delete (sets isActive: false)</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="warn">Data is never deleted. The user's record stays in the database with <code>isActive: false</code>. Their refresh token is also cleared, ending any active session.</div>
+        <div class="note">Returns <strong>400</strong> if you try to deactivate your own account.</div>
+      </div>
+    </details>
+
+    <details class="ep ep-patch" id="u-manager">
+      <summary>
+        <span class="ep-mthd">PATCH</span>
+        <span class="ep-path">/users/:id/assign-manager</span>
+        <span class="ep-desc">Assign or remove a manager</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="two">
+          <div>
+            <div class="ep-lbl">Assign manager</div>
+            <div class="cw"><pre>{ "managerId": 2 }</pre><button class="cpbtn" onclick="cp(this)">copy</button></div>
+          </div>
+          <div>
+            <div class="ep-lbl">Remove manager</div>
+            <div class="cw"><pre>{ "managerId": null }</pre><button class="cpbtn" onclick="cp(this)">copy</button></div>
+          </div>
+        </div>
+        <div class="note">Manager must have role MANAGER or ADMIN and must be active.</div>
+      </div>
+    </details>
+
+    <details class="ep ep-get" id="u-team">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/users/my-team</span>
+        <span class="ep-desc">Manager's own team members</span>
+        <span class="ep-rs"><span class="ep-r r-manager">Manager</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="note">Returns only users where <code>managerId = req.user.id</code>. Supports <code>?search=</code>, <code>?page=</code>, <code>?limit=</code>.</div>
+      </div>
+    </details>
+
+    <details class="ep ep-patch" id="u-profile">
+      <summary>
+        <span class="ep-mthd">PATCH</span>
+        <span class="ep-path">/users/my-profile</span>
+        <span class="ep-desc">Update own name / phone / avatar</span>
+        <span class="ep-rs"><span class="ep-r r-all">All roles</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Request Body (all optional)</div>
+        <div class="cw">
+          <pre>{
+  "name": "John D. Employee",
+  "phone": "+91-9999999999",
+  "avatar": "https://example.com/avatar.png"
+}</pre>
+          <button class="cpbtn" onclick="cp(this)">copy</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="ep ep-get" id="u-bal-get">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/users/:id/leave-balance</span>
+        <span class="ep-desc">View leave balance for a year</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span><span class="ep-r r-manager">Manager</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="note">Query: <code>?year=2026</code> (defaults to current year)</div>
+      </div>
+    </details>
+
+    <details class="ep ep-patch" id="u-bal-set">
+      <summary>
+        <span class="ep-mthd">PATCH</span>
+        <span class="ep-path">/users/:id/leave-balance</span>
+        <span class="ep-desc">Override leave quotas</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Request Body (all optional)</div>
+        <div class="cw">
+          <pre>{
+  "casualTotal": 15,
+  "sickTotal": 12,
+  "halfDayTotal": 8,
+  "wfhTotal": 30
+}</pre>
+          <button class="cpbtn" onclick="cp(this)">copy</button>
+        </div>
+        <div class="warn">This updates only the <em>total</em> quota. The <em>used</em> counters are managed automatically by the leave approval system.</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ═══════════════════════════════════════ ATTENDANCE -->
+  <section id="attendance">
+    <div class="sec-head">
+      <h2>Attendance</h2><span class="sec-count">8 endpoints</span>
+    </div>
+
+    <details class="ep ep-get" id="att-timer">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/attendance/live-timer</span>
+        <span class="ep-desc">Source of truth for the working timer</span>
+        <span class="ep-rs"><span class="ep-r r-all">All roles</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Response — checked in</div>
+        <div class="cw">
+          <pre>{
+  "success": true,
+  "data": {
+    "active": true,
+    "checkInTime": "2026-06-24T06:30:00.000Z",
+    "elapsedMs": 3752000
+  }
+}</pre>
+          <button class="cpbtn" onclick="cp(this)">copy</button>
+        </div>
+        <div class="tip">Frontend uses <code>elapsedMs</code> to seed the timer on every page load. This survives browser refreshes because the source of truth is the DB, not localStorage.</div>
+      </div>
+    </details>
+
+    <details class="ep ep-get" id="att-today">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/attendance/today</span>
+        <span class="ep-desc">Today's attendance record</span>
+        <span class="ep-rs"><span class="ep-r r-all">All roles</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="note">Returns <code>null</code> if the employee hasn't checked in yet today. Returns the full attendance row once they have.</div>
+      </div>
+    </details>
+
+    <details class="ep ep-post" id="att-in">
+      <summary>
+        <span class="ep-mthd">POST</span>
+        <span class="ep-path">/attendance/check-in</span>
+        <span class="ep-desc">Record check-in with GPS coordinates</span>
+        <span class="ep-rs"><span class="ep-r r-all">All roles</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="two">
+          <div>
+            <div class="ep-lbl">Request Body</div>
+            <div class="cw">
+              <pre>{
+  "lat": 28.6139,
+  "lng": 77.2090,
+  "address": "Connaught Place, New Delhi"
+}</pre>
+              <button class="cpbtn" onclick="cp(this)">copy</button>
+            </div>
+          </div>
+          <div>
+            <div class="ep-lbl">Fields</div>
+            <table class="ptbl">
+              <tr><th>Field</th><th>Rule</th></tr>
+              <tr><td>lat</td><td><span class="req">required</span> -90 to 90</td></tr>
+              <tr><td>lng</td><td><span class="req">required</span> -180 to 180</td></tr>
+              <tr><td>address</td><td><span class="opt">optional</span> max 300 chars</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="warn">Returns <strong>400</strong> if already checked in today. One check-in per employee per calendar day (enforced by DB unique constraint).</div>
+      </div>
+    </details>
+
+    <details class="ep ep-post" id="att-out">
+      <summary>
+        <span class="ep-mthd">POST</span>
+        <span class="ep-path">/attendance/check-out</span>
+        <span class="ep-desc">Record check-out, compute working hours</span>
+        <span class="ep-rs"><span class="ep-r r-all">All roles</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="two">
+          <div>
+            <div class="ep-lbl">Request Body</div>
+            <div class="cw">
+              <pre>{
+  "lat": 28.6139,
+  "lng": 77.2090,
+  "address": "Connaught Place, New Delhi"
+}</pre>
+              <button class="cpbtn" onclick="cp(this)">copy</button>
+            </div>
+          </div>
+          <div>
+            <div class="ep-lbl">Response 200</div>
+            <div class="cw">
+              <pre>{
+  "data": {
+    "checkOutTime": "2026-06-24T15:30:00.000Z",
+    "workingHours": 9.0,
+    "status": "PRESENT"
+  }
+}</pre>
+            </div>
+          </div>
+        </div>
+        <div class="note"><code>workingHours</code> = <code>(checkOutTime - checkInTime) / 3600000</code>, stored as a decimal (e.g. 8.5 = 8h 30m).</div>
+      </div>
+    </details>
+
+    <details class="ep ep-get" id="att-my">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/attendance/my</span>
+        <span class="ep-desc">Own attendance history</span>
+        <span class="ep-rs"><span class="ep-r r-all">All roles</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Query Params</div>
+        <table class="ptbl">
+          <tr><th>Param</th><th>Example</th><th>Notes</th></tr>
+          <tr><td>from</td><td>2026-06-01</td><td><span class="opt">optional</span> ISO date</td></tr>
+          <tr><td>to</td><td>2026-06-30</td><td><span class="opt">optional</span> ISO date</td></tr>
+          <tr><td>page</td><td>1</td><td><span class="opt">optional</span></td></tr>
+          <tr><td>limit</td><td>31</td><td><span class="opt">optional</span> default 31</td></tr>
+        </table>
+      </div>
+    </details>
+
+    <details class="ep ep-get" id="att-team">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/attendance/team</span>
+        <span class="ep-desc">Team attendance (manager-scoped)</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span><span class="ep-r r-manager">Manager</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="note">For a Manager, results are automatically scoped to only their team members. Supports <code>?from=</code>, <code>?to=</code>, <code>?employeeId=</code>, <code>?page=</code>, <code>?limit=</code>.</div>
+      </div>
+    </details>
+
+    <details class="ep ep-get" id="att-all">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/attendance</span>
+        <span class="ep-desc">All attendance org-wide</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Query Params</div>
+        <table class="ptbl">
+          <tr><th>Param</th><th>Example</th></tr>
+          <tr><td>from / to</td><td>2026-06-01 / 2026-06-30</td></tr>
+          <tr><td>employeeId</td><td>3</td></tr>
+          <tr><td>departmentId</td><td>1</td></tr>
+          <tr><td>status</td><td>PRESENT / ABSENT / HALF_DAY / LEAVE / WFH / FIELD_VISIT</td></tr>
+          <tr><td>page / limit</td><td>1 / 50</td></tr>
+        </table>
+      </div>
+    </details>
+
+    <details class="ep ep-patch" id="att-update">
+      <summary>
+        <span class="ep-mthd">PATCH</span>
+        <span class="ep-path">/attendance/:id</span>
+        <span class="ep-desc">Manual correction of a record</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Request Body (all optional)</div>
+        <div class="cw">
+          <pre>{
+  "checkInTime": "2026-06-24T09:15:00.000Z",
+  "checkOutTime": "2026-06-24T18:00:00.000Z",
+  "status": "PRESENT",
+  "note": "Time corrected by admin"
+}</pre>
+          <button class="cpbtn" onclick="cp(this)">copy</button>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ═══════════════════════════════════════ LEAVES -->
+  <section id="leaves">
+    <div class="sec-head">
+      <h2>Leaves</h2><span class="sec-count">9 endpoints</span>
+    </div>
+
+    <details class="ep ep-get" id="lv-balance">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/leaves/my-balance</span>
+        <span class="ep-desc">Own leave balance for the year</span>
+        <span class="ep-rs"><span class="ep-r r-all">All roles</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Response 200</div>
+        <div class="cw">
+          <pre>{
+  "data": {
+    "year": 2026,
+    "casualTotal": 12, "casualUsed": 2,
+    "sickTotal": 10,   "sickUsed": 0,
+    "halfDayTotal": 6, "halfDayUsed": 1,
+    "wfhTotal": 24,    "wfhUsed": 4
+  }
+}</pre>
+          <button class="cpbtn" onclick="cp(this)">copy</button>
+        </div>
+        <div class="note">Query <code>?year=2025</code> for a previous year. EARLY_LEAVE and FIELD_VISIT have no balance counter — they don't deduct from any quota.</div>
+      </div>
+    </details>
+
+    <details class="ep ep-post" id="lv-apply">
+      <summary>
+        <span class="ep-mthd">POST</span>
+        <span class="ep-path">/leaves</span>
+        <span class="ep-desc">Apply for leave</span>
+        <span class="ep-rs"><span class="ep-r r-all">All roles</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="two">
+          <div>
+            <div class="ep-lbl">Request Body</div>
+            <div class="cw">
+              <pre>{
+  "type": "CASUAL",
+  "startDate": "2026-07-01",
+  "endDate": "2026-07-02",
+  "reason": "Family function"
+}</pre>
+              <button class="cpbtn" onclick="cp(this)">copy</button>
+            </div>
+          </div>
+          <div>
+            <div class="ep-lbl">Leave Types</div>
+            <table class="ptbl">
+              <tr><th>Type</th><th>Deducts Balance?</th></tr>
+              <tr><td>CASUAL</td><td>Yes — casualUsed</td></tr>
+              <tr><td>SICK</td><td>Yes — sickUsed</td></tr>
+              <tr><td>HALF_DAY</td><td>Yes — halfDayUsed</td></tr>
+              <tr><td>WFH</td><td>Yes — wfhUsed</td></tr>
+              <tr><td>EARLY_LEAVE</td><td>No</td></tr>
+              <tr><td>FIELD_VISIT</td><td>No</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="warn">Returns <strong>400</strong> if: (a) insufficient balance, or (b) dates overlap with an existing PENDING or APPROVED leave.</div>
+      </div>
+    </details>
+
+    <details class="ep ep-get" id="lv-my">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/leaves/my</span>
+        <span class="ep-desc">Own leave history</span>
+        <span class="ep-rs"><span class="ep-r r-all">All roles</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Query Params</div>
+        <table class="ptbl">
+          <tr><th>Param</th><th>Example</th></tr>
+          <tr><td>status</td><td>PENDING / APPROVED / REJECTED</td></tr>
+          <tr><td>year</td><td>2026</td></tr>
+          <tr><td>page / limit</td><td>1 / 20</td></tr>
+        </table>
+      </div>
+    </details>
+
+    <details class="ep ep-get" id="lv-pending">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/leaves/pending</span>
+        <span class="ep-desc">All pending leaves in your team</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span><span class="ep-r r-manager">Manager</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="note">Manager sees only their team's pending leaves. Admin sees all pending leaves org-wide. Returns oldest-first so the most urgent reviews are at the top.</div>
+      </div>
+    </details>
+
+    <details class="ep ep-get" id="lv-get">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/leaves/:id</span>
+        <span class="ep-desc">Single leave record</span>
+        <span class="ep-rs"><span class="ep-r r-all">Scoped</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="note">Employees can only fetch their own leaves. Managers can only fetch their team's leaves. Admins can fetch any leave.</div>
+      </div>
+    </details>
+
+    <details class="ep ep-post" id="lv-approve">
+      <summary>
+        <span class="ep-mthd">POST</span>
+        <span class="ep-path">/leaves/:id/approve</span>
+        <span class="ep-desc">Approve — atomic transaction</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span><span class="ep-r r-manager">Manager</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="two">
+          <div>
+            <div class="ep-lbl">Request Body</div>
+            <div class="cw"><pre>{ "comments": "Approved. Enjoy." }</pre><button class="cpbtn" onclick="cp(this)">copy</button></div>
+          </div>
+          <div>
+            <div class="ep-lbl">What happens inside the transaction</div>
+            <div class="cw">
+              <pre>1. Leave status → APPROVED
+2. Attendance rows created for
+   each working day in the range
+3. Leave balance *_used incremented
+   (only for balance-deducting types)</pre>
+            </div>
+          </div>
+        </div>
+        <div class="tip">All three DB operations succeed or all fail together (Prisma <code>$transaction</code>). Partial approvals are impossible.</div>
+        <div class="warn">Returns <strong>403</strong> if a Manager tries to approve a leave for someone not on their team.</div>
+      </div>
+    </details>
+
+    <details class="ep ep-post" id="lv-reject">
+      <summary>
+        <span class="ep-mthd">POST</span>
+        <span class="ep-path">/leaves/:id/reject</span>
+        <span class="ep-desc">Reject with mandatory reason</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span><span class="ep-r r-manager">Manager</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Request Body</div>
+        <div class="cw"><pre>{ "comments": "Insufficient leave balance for this period." }</pre><button class="cpbtn" onclick="cp(this)">copy</button></div>
+        <div class="note"><code>comments</code> is <strong>required</strong> when rejecting (min 3 chars). No balance is deducted on rejection.</div>
+      </div>
+    </details>
+
+    <details class="ep ep-del" id="lv-cancel">
+      <summary>
+        <span class="ep-mthd">DEL</span>
+        <span class="ep-path">/leaves/:id</span>
+        <span class="ep-desc">Cancel own pending leave</span>
+        <span class="ep-rs"><span class="ep-r r-employee">Employee</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="warn">Only works on <strong>PENDING</strong> leaves. Cannot cancel an already approved or rejected leave. Can only cancel your own leave.</div>
+      </div>
+    </details>
+
+    <details class="ep ep-get" id="lv-all">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/leaves</span>
+        <span class="ep-desc">All leaves org-wide</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Query Params</div>
+        <table class="ptbl">
+          <tr><th>Param</th><th>Example</th></tr>
+          <tr><td>status</td><td>PENDING / APPROVED / REJECTED</td></tr>
+          <tr><td>type</td><td>CASUAL / SICK / WFH / …</td></tr>
+          <tr><td>departmentId</td><td>1</td></tr>
+          <tr><td>employeeId</td><td>3</td></tr>
+          <tr><td>page / limit</td><td>1 / 30</td></tr>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <!-- ═══════════════════════════════════════ REPORTS -->
+  <section id="reports">
+    <div class="sec-head">
+      <h2>Reports</h2><span class="sec-count">4 endpoints</span>
+    </div>
+
+    <details class="ep ep-get" id="rpt-dash">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/reports/dashboard</span>
+        <span class="ep-desc">Admin dashboard stats</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Response 200</div>
+        <div class="cw">
+          <pre>{
+  "data": {
+    "today": {
+      "date": "2026-06-24",
+      "presentToday": 12,
+      "leavesToday": 2,
+      "pendingLeaves": 5
+    },
+    "totals": {
+      "totalEmployees": 48,
+      "totalDepartments": 6
+    },
+    "monthlyAttendanceSummary": [
+      { "status": "PRESENT",   "count": 280 },
+      { "status": "ABSENT",    "count": 14  },
+      { "status": "LEAVE",     "count": 22  },
+      { "status": "WFH",       "count": 45  }
+    ]
+  }
+}</pre>
+          <button class="cpbtn" onclick="cp(this)">copy</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="ep ep-get" id="rpt-att">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/reports/attendance-summary</span>
+        <span class="ep-desc">Per-employee status breakdown</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span><span class="ep-r r-manager">Manager</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Query Params</div>
+        <table class="ptbl">
+          <tr><th>Param</th><th>Example</th></tr>
+          <tr><td>from / to</td><td>2026-06-01 / 2026-06-30</td></tr>
+          <tr><td>departmentId</td><td>1 (admin only)</td></tr>
+          <tr><td>employeeId</td><td>3 (admin only)</td></tr>
+        </table>
+        <div class="note">Manager results are automatically scoped to their team. Response groups by employee, then by status with day counts.</div>
+      </div>
+    </details>
+
+    <details class="ep ep-get" id="rpt-lv">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/reports/leave-summary</span>
+        <span class="ep-desc">Leave balance table for all employees</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span><span class="ep-r r-manager">Manager</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Query Params</div>
+        <table class="ptbl">
+          <tr><th>Param</th><th>Example</th></tr>
+          <tr><td>year</td><td>2026 (default current)</td></tr>
+          <tr><td>departmentId</td><td>1 (admin only)</td></tr>
+        </table>
+      </div>
+    </details>
+
+    <details class="ep ep-get" id="rpt-monthly">
+      <summary>
+        <span class="ep-mthd">GET</span>
+        <span class="ep-path">/reports/monthly</span>
+        <span class="ep-desc">Monthly attendance + leave breakdown</span>
+        <span class="ep-rs"><span class="ep-r r-admin">Admin</span></span>
+        <span class="chv">▶</span>
+      </summary>
+      <div class="ep-body">
+        <div class="ep-lbl">Query Params</div>
+        <table class="ptbl">
+          <tr><th>Param</th><th>Example</th></tr>
+          <tr><td>year</td><td>2026</td></tr>
+          <tr><td>month</td><td>6 (June)</td></tr>
+          <tr><td>departmentId</td><td>1</td></tr>
+        </table>
+        <div class="ep-lbl" style="margin-top:10px;">Response 200</div>
+        <div class="cw">
+          <pre>{
+  "data": {
+    "period": { "year": 2026, "month": 6 },
+    "attendance": [
+      { "status": "PRESENT", "count": 320 },
+      { "status": "LEAVE",   "count": 18  }
+    ],
+    "leaves": [
+      { "type": "CASUAL", "status": "APPROVED", "count": 10 },
+      { "type": "WFH",    "status": "APPROVED", "count": 25 }
+    ]
+  }
+}</pre>
+          <button class="cpbtn" onclick="cp(this)">copy</button>
+        </div>
+      </div>
+    </details>
+  </section>
+</main>
+
+<script>
+function cp(btn) {
+  const pre = btn.previousElementSibling;
+  navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = 'copied!';
+    btn.style.color = 'var(--accent)';
+    setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 1500);
+  });
+}
+</script>

@@ -1,0 +1,802 @@
+{
+  "info": {
+    "_postman_id": "worktrack-api-v1",
+    "name": "WorkTrack API",
+    "description": "Complete API collection for WorkTrack Attendance & Leave Management System.\n\n**Setup:**\n1. Import this collection into Postman\n2. Login with any credential below — the token is saved automatically\n3. All subsequent requests use {{accessToken}} variable\n\n**Test Credentials:**\n- Admin: admin@company.com / Admin@1234\n- Manager: manager@company.com / Manager@1234\n- Employee: employee@company.com / Employee@1234",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl",       "value": "http://localhost:5000/api/v1", "type": "string" },
+    { "key": "accessToken",   "value": "",  "type": "string" },
+    { "key": "userId",        "value": "3", "type": "string" },
+    { "key": "departmentId",  "value": "1", "type": "string" },
+    { "key": "leaveId",       "value": "1", "type": "string" },
+    { "key": "attendanceId",  "value": "1", "type": "string" }
+  ],
+  "item": [
+
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  pm.collectionVariables.set('accessToken', json.data.accessToken);",
+                  "  console.log('✅ Token saved automatically');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@company.com\",\n  \"password\": \"Admin@1234\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Authenticate and receive access + refresh tokens. The test script auto-saves accessToken to the collection variable."
+          }
+        },
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "Returns the profile of the currently authenticated user."
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  pm.collectionVariables.set('accessToken', json.data.accessToken);",
+                  "  console.log('✅ Token refreshed');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
+            },
+            "description": "Uses the httpOnly refreshToken cookie (set automatically after login). Enable 'Send cookies' in Postman settings."
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"Admin@1234\",\n  \"newPassword\": \"Admin@5678\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/me/password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me", "password"]
+            },
+            "description": "newPassword must have uppercase, lowercase, and a number (min 8 chars)."
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Clears the refresh token in DB and expires the cookie."
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Departments",
+      "item": [
+        {
+          "name": "List All Departments",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/departments",
+              "host": ["{{baseUrl}}"],
+              "path": ["departments"]
+            },
+            "description": "Available to all authenticated roles."
+          }
+        },
+        {
+          "name": "Create Department",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Human Resources\",\n  \"description\": \"HR Department\",\n  \"headId\": 2\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/departments",
+              "host": ["{{baseUrl}}"],
+              "path": ["departments"]
+            },
+            "description": "Admin only. headId is optional (user ID of department head)."
+          }
+        },
+        {
+          "name": "Get Department by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/departments/{{departmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["departments", "{{departmentId}}"]
+            },
+            "description": "Returns department with full employee list."
+          }
+        },
+        {
+          "name": "Update Department",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"HR & Admin\",\n  \"description\": \"Updated description\",\n  \"headId\": 3,\n  \"isActive\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/departments/{{departmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["departments", "{{departmentId}}"]
+            },
+            "description": "Admin only. All fields optional."
+          }
+        },
+        {
+          "name": "Delete Department",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/departments/{{departmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["departments", "{{departmentId}}"]
+            },
+            "description": "Admin only. Fails with 400 if department has active employees."
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "List All Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/users?page=1&limit=20&role=EMPLOYEE",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"],
+              "query": [
+                { "key": "page",         "value": "1" },
+                { "key": "limit",        "value": "20" },
+                { "key": "role",         "value": "EMPLOYEE" },
+                { "key": "departmentId", "value": "",    "disabled": true },
+                { "key": "search",       "value": "",    "disabled": true },
+                { "key": "isActive",     "value": "true","disabled": true }
+              ]
+            },
+            "description": "Admin only. Supports pagination and filters."
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Smith\",\n  \"email\": \"jane@company.com\",\n  \"password\": \"Jane@1234\",\n  \"role\": \"EMPLOYEE\",\n  \"employeeId\": \"EMP010\",\n  \"departmentId\": 1,\n  \"managerId\": 2,\n  \"phone\": \"+91-9876543210\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            },
+            "description": "Admin only. Auto-creates a LeaveBalance row for the current year."
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}"]
+            },
+            "description": "Admin only. Returns user profile + leave balances."
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Updated\",\n  \"role\": \"MANAGER\",\n  \"departmentId\": 1,\n  \"isActive\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}"]
+            },
+            "description": "Admin only. All fields optional."
+          }
+        },
+        {
+          "name": "Deactivate User (Soft Delete)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}"]
+            },
+            "description": "Admin only. Sets isActive: false — data is never deleted."
+          }
+        },
+        {
+          "name": "Assign Manager",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"managerId\": 2\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}/assign-manager",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}", "assign-manager"]
+            },
+            "description": "Admin only. Set managerId: null to remove manager."
+          }
+        },
+        {
+          "name": "Get My Team",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/users/my-team?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "my-team"],
+              "query": [
+                { "key": "page",   "value": "1" },
+                { "key": "limit",  "value": "20" },
+                { "key": "search", "value": "", "disabled": true }
+              ]
+            },
+            "description": "Manager only. Returns users where managerId = current user's ID."
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"My Updated Name\",\n  \"phone\": \"+91-9999999999\",\n  \"avatar\": \"https://example.com/avatar.png\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/my-profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "my-profile"]
+            },
+            "description": "All roles. Can update name, phone, avatar only."
+          }
+        },
+        {
+          "name": "Get Leave Balance",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}/leave-balance?year=2026",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}", "leave-balance"],
+              "query": [{ "key": "year", "value": "2026" }]
+            },
+            "description": "Admin and Manager. Returns leave quota and usage for a year."
+          }
+        },
+        {
+          "name": "Update Leave Balance",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"casualTotal\": 15,\n  \"sickTotal\": 12,\n  \"halfDayTotal\": 8,\n  \"wfhTotal\": 30\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}/leave-balance?year=2026",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}", "leave-balance"],
+              "query": [{ "key": "year", "value": "2026" }]
+            },
+            "description": "Admin only. Updates total quota only — used counters are system-managed."
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Attendance",
+      "item": [
+        {
+          "name": "Get Live Timer",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/attendance/live-timer",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendance", "live-timer"]
+            },
+            "description": "Returns checkInTime and elapsedMs. Frontend seeds the timer from this on every page load."
+          }
+        },
+        {
+          "name": "Get Today's Record",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/attendance/today",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendance", "today"]
+            },
+            "description": "Returns today's attendance row, or null if not checked in yet."
+          }
+        },
+        {
+          "name": "Check In",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lat\": 28.6139,\n  \"lng\": 77.2090,\n  \"address\": \"Connaught Place, New Delhi\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/attendance/check-in",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendance", "check-in"]
+            },
+            "description": "Records check-in with GPS coordinates. One check-in per employee per day."
+          }
+        },
+        {
+          "name": "Check Out",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lat\": 28.6139,\n  \"lng\": 77.2090,\n  \"address\": \"Connaught Place, New Delhi\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/attendance/check-out",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendance", "check-out"]
+            },
+            "description": "Records check-out. workingHours = (checkOut - checkIn) / 3600000."
+          }
+        },
+        {
+          "name": "My Attendance History",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/attendance/my?from=2026-06-01&to=2026-06-30",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendance", "my"],
+              "query": [
+                { "key": "from",  "value": "2026-06-01" },
+                { "key": "to",    "value": "2026-06-30" },
+                { "key": "page",  "value": "1" },
+                { "key": "limit", "value": "31" }
+              ]
+            },
+            "description": "Own attendance history with date range filter."
+          }
+        },
+        {
+          "name": "Team Attendance",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/attendance/team?from=2026-06-01&to=2026-06-30",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendance", "team"],
+              "query": [
+                { "key": "from",       "value": "2026-06-01" },
+                { "key": "to",         "value": "2026-06-30" },
+                { "key": "employeeId", "value": "", "disabled": true },
+                { "key": "page",       "value": "1" },
+                { "key": "limit",      "value": "50" }
+              ]
+            },
+            "description": "Manager/Admin. Manager results are scoped to their team."
+          }
+        },
+        {
+          "name": "All Attendance (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/attendance?from=2026-06-01&to=2026-06-30",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendance"],
+              "query": [
+                { "key": "from",         "value": "2026-06-01" },
+                { "key": "to",           "value": "2026-06-30" },
+                { "key": "employeeId",   "value": "", "disabled": true },
+                { "key": "departmentId", "value": "", "disabled": true },
+                { "key": "status",       "value": "", "disabled": true },
+                { "key": "page",         "value": "1" },
+                { "key": "limit",        "value": "50" }
+              ]
+            },
+            "description": "Admin only. Org-wide attendance with full filters."
+          }
+        },
+        {
+          "name": "Update Attendance Record",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"checkInTime\": \"2026-06-24T09:15:00.000Z\",\n  \"checkOutTime\": \"2026-06-24T18:00:00.000Z\",\n  \"status\": \"PRESENT\",\n  \"note\": \"Time corrected by admin\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/attendance/{{attendanceId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendance", "{{attendanceId}}"]
+            },
+            "description": "Admin only. Manual correction of any attendance record."
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Leaves",
+      "item": [
+        {
+          "name": "My Leave Balance",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/leaves/my-balance?year=2026",
+              "host": ["{{baseUrl}}"],
+              "path": ["leaves", "my-balance"],
+              "query": [{ "key": "year", "value": "2026" }]
+            },
+            "description": "All roles. Returns own leave quota and used counts for the year."
+          }
+        },
+        {
+          "name": "Apply for Leave",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"CASUAL\",\n  \"startDate\": \"2026-07-10\",\n  \"endDate\": \"2026-07-11\",\n  \"reason\": \"Family function\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leaves",
+              "host": ["{{baseUrl}}"],
+              "path": ["leaves"]
+            },
+            "description": "All roles. Types: CASUAL, SICK, HALF_DAY, EARLY_LEAVE, WFH, FIELD_VISIT. Checks balance before creating."
+          }
+        },
+        {
+          "name": "My Leave History",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/leaves/my?status=PENDING",
+              "host": ["{{baseUrl}}"],
+              "path": ["leaves", "my"],
+              "query": [
+                { "key": "status", "value": "PENDING" },
+                { "key": "year",   "value": "2026", "disabled": true },
+                { "key": "page",   "value": "1" },
+                { "key": "limit",  "value": "20" }
+              ]
+            },
+            "description": "All roles. Own leave history. Filter by status or year."
+          }
+        },
+        {
+          "name": "Pending Leaves (Team)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/leaves/pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["leaves", "pending"]
+            },
+            "description": "Manager/Admin. Manager sees only their team. Returns oldest-first."
+          }
+        },
+        {
+          "name": "Get Leave by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/leaves/{{leaveId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["leaves", "{{leaveId}}"]
+            },
+            "description": "Scoped: Employee sees own, Manager sees team's, Admin sees all."
+          }
+        },
+        {
+          "name": "Approve Leave",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comments\": \"Approved. Enjoy your leave.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leaves/{{leaveId}}/approve",
+              "host": ["{{baseUrl}}"],
+              "path": ["leaves", "{{leaveId}}", "approve"]
+            },
+            "description": "Manager/Admin. Atomic transaction: updates leave status + creates attendance rows + deducts balance."
+          }
+        },
+        {
+          "name": "Reject Leave",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comments\": \"Insufficient leave balance for this period.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leaves/{{leaveId}}/reject",
+              "host": ["{{baseUrl}}"],
+              "path": ["leaves", "{{leaveId}}", "reject"]
+            },
+            "description": "Manager/Admin. comments is required (min 3 chars) when rejecting."
+          }
+        },
+        {
+          "name": "Cancel Leave",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/leaves/{{leaveId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["leaves", "{{leaveId}}"]
+            },
+            "description": "Employee only. Can only cancel own PENDING leaves."
+          }
+        },
+        {
+          "name": "All Leaves (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/leaves?status=PENDING&page=1&limit=30",
+              "host": ["{{baseUrl}}"],
+              "path": ["leaves"],
+              "query": [
+                { "key": "status",       "value": "PENDING" },
+                { "key": "type",         "value": "", "disabled": true },
+                { "key": "departmentId", "value": "", "disabled": true },
+                { "key": "employeeId",   "value": "", "disabled": true },
+                { "key": "page",         "value": "1" },
+                { "key": "limit",        "value": "30" }
+              ]
+            },
+            "description": "Admin only. All leave requests org-wide with filters."
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Admin Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/reports/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "dashboard"]
+            },
+            "description": "Admin only. Today stats, org totals, monthly attendance summary."
+          }
+        },
+        {
+          "name": "Attendance Summary",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/reports/attendance-summary?from=2026-06-01&to=2026-06-30",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "attendance-summary"],
+              "query": [
+                { "key": "from",         "value": "2026-06-01" },
+                { "key": "to",           "value": "2026-06-30" },
+                { "key": "departmentId", "value": "", "disabled": true },
+                { "key": "employeeId",   "value": "", "disabled": true }
+              ]
+            },
+            "description": "Admin/Manager. Per-employee status breakdown. Manager auto-scoped to team."
+          }
+        },
+        {
+          "name": "Leave Summary",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/reports/leave-summary?year=2026",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "leave-summary"],
+              "query": [
+                { "key": "year",         "value": "2026" },
+                { "key": "departmentId", "value": "", "disabled": true }
+              ]
+            },
+            "description": "Admin/Manager. Leave balance table for all employees in the year."
+          }
+        },
+        {
+          "name": "Monthly Report",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/reports/monthly?year=2026&month=6",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "monthly"],
+              "query": [
+                { "key": "year",         "value": "2026" },
+                { "key": "month",        "value": "6" },
+                { "key": "departmentId", "value": "", "disabled": true }
+              ]
+            },
+            "description": "Admin only. Monthly attendance and leave breakdown by status and type."
+          }
+        }
+      ]
+    }
+
+  ]
+}

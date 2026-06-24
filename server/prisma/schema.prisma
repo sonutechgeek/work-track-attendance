@@ -1,0 +1,254 @@
+// =============================================================
+// WorkTrack — Prisma Schema
+// Database : MySQL 8.x
+// ORM      : Prisma 5.x
+// =============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// =============================================================
+// ENUMS
+// =============================================================
+
+enum Role {
+  ADMIN
+  MANAGER
+  EMPLOYEE
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  HALF_DAY
+  LEAVE
+  WFH
+  FIELD_VISIT
+}
+
+enum LeaveType {
+  CASUAL
+  SICK
+  HALF_DAY
+  EARLY_LEAVE
+  WFH
+  FIELD_VISIT
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// =============================================================
+// MODEL: Department
+// Table : departments
+// Notes : Created before users to satisfy FK on users.department_id.
+//         head_id is a back-reference to users — Prisma handles
+//         the circular dependency at the schema level.
+// =============================================================
+
+model Department {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique @db.VarChar(100)
+  description String?  @db.Text
+  headId      Int?     @map("head_id")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  head  User?  @relation("DepartmentHead", fields: [headId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  users User[] @relation("UserDepartment")
+
+  @@map("departments")
+}
+
+// =============================================================
+// MODEL: User
+// Table : users
+// Notes :
+//   - All three roles share this table (discriminated by `role`).
+//   - manager_id is self-referential (an employee's direct manager).
+//   - department_id / manager_id both use SET NULL on delete so
+//     records are preserved when a dept or manager is removed.
+//   - password is NEVER returned by default — always use
+//     `select: { password: false }` in Prisma queries.
+//   - failed_logins + lock_until implement brute-force lockout.
+//   - refresh_token stores the hashed token (not plaintext).
+// =============================================================
+
+model User {
+  id           Int       @id @default(autoincrement())
+  name         String    @db.VarChar(100)
+  email        String    @unique @db.VarChar(150)
+  password     String    @db.VarChar(255)
+  role         Role      @default(EMPLOYEE)
+  employeeId   String?   @unique @db.VarChar(20) @map("employee_id")
+  departmentId Int?      @map("department_id")
+  managerId    Int?      @map("manager_id")
+  phone        String?   @db.VarChar(20)
+  avatar       String?   @db.VarChar(500)
+  isActive     Boolean   @default(true) @map("is_active")
+  failedLogins Int       @default(0) @map("failed_logins")
+  lockUntil    DateTime? @map("lock_until")
+  lastLogin    DateTime? @map("last_login")
+  refreshToken String?   @db.Text @map("refresh_token")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  department   Department? @relation("UserDepartment", fields: [departmentId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  headOfDepts  Department[] @relation("DepartmentHead")                          // back-relation (depts this user heads)
+  manager      User?       @relation("ManagerEmployees", fields: [managerId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  employees    User[]      @relation("ManagerEmployees")                          // people this user manages
+
+  attendances    Attendance[]
+  leaves         Leave[]       @relation("EmployeeLeaves")
+  reviewedLeaves Leave[]       @relation("ReviewedLeaves")
+  leaveBalances  LeaveBalance[]
+
+  @@index([role])
+  @@index([departmentId])
+  @@index([managerId])
+  @@index([isActive])
+  @@map("users")
+}
+
+// =============================================================
+// MODEL: Attendance
+// Table : attendances
+// Notes :
+//   - @@unique([employeeId, date]) — exactly one row per employee
+//     per calendar day. Prisma P2002 error = duplicate check-in.
+//   - Geolocation stored as flat DECIMAL columns (not JSON)
+//     for easy SQL WHERE filtering and range queries.
+//   - workingHours is NULL until check-out is recorded.
+//     Computed as: TIMESTAMPDIFF(SECOND, checkInTime, checkOutTime) / 3600
+//   - checkInTime is the source of truth for the live timer.
+//     Frontend computes elapsed = Date.now() - checkInTime on load.
+// =============================================================
+
+model Attendance {
+  id              Int              @id @default(autoincrement())
+  employeeId      Int              @map("employee_id")
+  date            DateTime         @db.Date
+
+  // Check-in snapshot
+  checkInTime     DateTime?        @map("check_in_time")
+  checkInLat      Decimal?         @db.Decimal(10, 8) @map("check_in_lat")
+  checkInLng      Decimal?         @db.Decimal(11, 8) @map("check_in_lng")
+  checkInAddress  String?          @db.VarChar(300) @map("check_in_address")
+
+  // Check-out snapshot
+  checkOutTime    DateTime?        @map("check_out_time")
+  checkOutLat     Decimal?         @db.Decimal(10, 8) @map("check_out_lat")
+  checkOutLng     Decimal?         @db.Decimal(11, 8) @map("check_out_lng")
+  checkOutAddress String?          @db.VarChar(300) @map("check_out_address")
+
+  // Summary
+  workingHours    Decimal?         @db.Decimal(5, 2) @map("working_hours")
+  status          AttendanceStatus @default(PRESENT)
+  note            String?          @db.Text
+
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  // Relations
+  employee        User             @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([employeeId, date])
+  @@index([date])
+  @@index([status])
+  @@map("attendances")
+}
+
+// =============================================================
+// MODEL: Leave
+// Table : leaves
+// Notes :
+//   - duration is DECIMAL(4,1) to support half-day (0.5) values.
+//   - reviewedById uses SET NULL so leave records survive reviewer
+//     deletion (audit trail is preserved via reviewedAt timestamp).
+//   - On APPROVED: a Prisma $transaction updates this row, creates
+//     Attendance rows for each date in [startDate, endDate], and
+//     increments the matching *_used column in leave_balances.
+//   - LeaveType WFH / FIELD_VISIT also create Attendance rows
+//     with status WFH / FIELD_VISIT respectively.
+// =============================================================
+
+model Leave {
+  id           Int         @id @default(autoincrement())
+  employeeId   Int         @map("employee_id")
+  type         LeaveType
+  startDate    DateTime    @db.Date @map("start_date")
+  endDate      DateTime    @db.Date @map("end_date")
+  duration     Decimal     @db.Decimal(4, 1) @default(1.0)
+  reason       String      @db.Text
+  status       LeaveStatus @default(PENDING)
+  reviewedById Int?        @map("reviewed_by_id")
+  reviewedAt   DateTime?   @map("reviewed_at")
+  comments     String?     @db.Text
+
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  employee   User  @relation("EmployeeLeaves", fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  reviewedBy User? @relation("ReviewedLeaves", fields: [reviewedById], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([employeeId])
+  @@index([status])
+  @@index([startDate, endDate])
+  @@index([employeeId, status])
+  @@map("leaves")
+}
+
+// =============================================================
+// MODEL: LeaveBalance
+// Table : leave_balances
+// Notes :
+//   - @@unique([employeeId, year]) — one row per employee per year.
+//   - Seeded automatically when a new user is created (via service).
+//   - *_total is admin-adjustable; *_used is system-controlled.
+//   - Balance check before applying: casual_total - casual_used >= duration
+//   - On leave APPROVAL the matching *_used is incremented inside
+//     a Prisma $transaction (atomic with Leave status update).
+//   - EARLY_LEAVE and FIELD_VISIT do NOT deduct leave balance;
+//     they only create an Attendance record with the matching status.
+// =============================================================
+
+model LeaveBalance {
+  id           Int      @id @default(autoincrement())
+  employeeId   Int      @map("employee_id")
+  year         Int
+
+  casualTotal  Int      @default(12) @map("casual_total")
+  casualUsed   Int      @default(0)  @map("casual_used")
+
+  sickTotal    Int      @default(10) @map("sick_total")
+  sickUsed     Int      @default(0)  @map("sick_used")
+
+  halfDayTotal Int      @default(6)  @map("half_day_total")
+  halfDayUsed  Int      @default(0)  @map("half_day_used")
+
+  wfhTotal     Int      @default(24) @map("wfh_total")
+  wfhUsed      Int      @default(0)  @map("wfh_used")
+
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  employee     User     @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([employeeId, year])
+  @@index([year])
+  @@map("leave_balances")
+}
