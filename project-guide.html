@@ -1,0 +1,1364 @@
+<!doctype html><html><head><script>(()=>{function B(j){if(window===top)return;if(j.type==="auxclick"&&j.button!==1)return;const y=j.composedPath?j.composedPath():[j.target];let k=null;for(let x=0;x<y.length;x++){const q=y[x];if(q&&q.matches&&q.matches("a[href],area[href]")){k=q;break}}if(!k&&j.target&&j.target.closest){k=j.target.closest("a[href],area[href]")}if(!k)return;const z=k.getAttribute("href");if(!z)return;let m,A;try{m=new URL(z,document.baseURI);A=new URL(document.baseURI).origin}catch{return}if((m.protocol==="http:"||m.protocol==="https:")&&m.origin!==A){j.preventDefault();parent.postMessage({__frame_nav:true,url:m.href},"*")}}addEventListener("click",B,true);addEventListener("auxclick",B,true);})();</script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style></head><body>
+
+<title>WorkTrack — Complete Project Guide</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #EEF2F7;
+    --surface:   #FFFFFF;
+    --surface-2: #F1F5F9;
+    --border:    #CBD5E1;
+    --primary:   #1D4ED8;
+    --primary-lt:#DBEAFE;
+    --green:     #059669;
+    --green-lt:  #D1FAE5;
+    --amber:     #B45309;
+    --amber-lt:  #FEF3C7;
+    --red:       #DC2626;
+    --red-lt:    #FEE2E2;
+    --text:      #0F172A;
+    --muted:     #64748B;
+    --code-bg:   #0F172A;
+    --code-text: #CBD5E1;
+    --nav-w:     260px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--text);
+    background: var(--bg);
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  nav {
+    width: var(--nav-w);
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 0 40px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nav-brand {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  .nav-brand h1 {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--primary);
+  }
+
+  .nav-brand p {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  nav a {
+    display: block;
+    padding: 7px 20px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+
+  nav a:hover {
+    color: var(--primary);
+    background: var(--primary-lt);
+    border-left-color: var(--primary);
+  }
+
+  .nav-section {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--border);
+    padding: 16px 20px 4px;
+  }
+
+  /* ── MAIN ── */
+  main {
+    flex: 1;
+    min-width: 0;
+    padding: 48px 56px 80px;
+    max-width: 960px;
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    margin-bottom: 64px;
+    scroll-margin-top: 32px;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  h2 {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    text-wrap: balance;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 28px 0 10px;
+    letter-spacing: -0.01em;
+  }
+
+  h3.sub {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin: 20px 0 8px;
+  }
+
+  p { color: var(--muted); margin-bottom: 12px; }
+  strong { color: var(--text); font-weight: 600; }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--code-bg);
+    border-radius: 4px;
+    padding: 32px 36px;
+    margin-bottom: 64px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+  }
+
+  .hero-title {
+    grid-column: 1/-1;
+    border-bottom: 1px solid #1E293B;
+    padding-bottom: 20px;
+    margin-bottom: 4px;
+  }
+
+  .hero-title h1 {
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    color: #F8FAFC;
+    text-wrap: balance;
+  }
+
+  .hero-title p {
+    color: #64748B;
+    margin-top: 6px;
+    font-size: 13.5px;
+  }
+
+  .hero-stat {
+    padding: 16px 0;
+  }
+
+  .hero-stat .num {
+    font-size: 28px;
+    font-weight: 800;
+    color: #F8FAFC;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+    font-family: "Cascadia Code", Consolas, monospace;
+  }
+
+  .hero-stat .label {
+    font-size: 11px;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 4px;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .card.highlight-blue { border-left: 3px solid var(--primary); }
+  .card.highlight-green { border-left: 3px solid var(--green); }
+  .card.highlight-amber { border-left: 3px solid var(--amber); }
+  .card.highlight-red { border-left: 3px solid var(--red); }
+
+  /* ── BADGES ── */
+  .badge {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 2px 8px;
+    border-radius: 2px;
+  }
+
+  .badge-blue   { background: var(--primary-lt); color: var(--primary); }
+  .badge-green  { background: var(--green-lt);   color: var(--green); }
+  .badge-amber  { background: var(--amber-lt);   color: var(--amber); }
+  .badge-red    { background: var(--red-lt);     color: var(--red); }
+  .badge-gray   { background: var(--surface-2);  color: var(--muted); }
+
+  /* ── CODE ── */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 4px;
+    padding: 18px 22px;
+    margin: 12px 0 16px;
+    overflow-x: auto;
+    font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--code-text);
+  }
+
+  .code-block .kw  { color: #93C5FD; }   /* blue - keywords */
+  .code-block .fn  { color: #FDE68A; }   /* yellow - functions */
+  .code-block .str { color: #86EFAC; }   /* green - strings */
+  .code-block .cm  { color: #334155; }   /* gray - comments */
+  .code-block .num { color: #FDA4AF; }   /* red - numbers */
+  .code-block .cls { color: #F9A8D4; }   /* pink - classes */
+  .code-block .prp { color: #C4B5FD; }   /* purple - properties */
+
+  code {
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 5px;
+    color: var(--primary);
+  }
+
+  /* ── DB DIAGRAM ── */
+  .erd {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  .erd-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    min-width: 200px;
+    overflow: hidden;
+    font-size: 12px;
+  }
+
+  .erd-table-head {
+    padding: 8px 14px;
+    font-weight: 700;
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .erd-table-head.blue   { background: var(--primary-lt); color: var(--primary); }
+  .erd-table-head.green  { background: var(--green-lt);   color: var(--green); }
+  .erd-table-head.amber  { background: var(--amber-lt);   color: var(--amber); }
+  .erd-table-head.purple { background: #EDE9FE; color: #6D28D9; }
+  .erd-table-head.teal   { background: #CCFBF1; color: #0F766E; }
+
+  .erd-field {
+    padding: 5px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--surface-2);
+    font-family: "Cascadia Code", Consolas, monospace;
+    gap: 16px;
+  }
+
+  .erd-field .fname { color: var(--text); font-size: 11.5px; }
+  .erd-field .ftype { color: var(--muted); font-size: 10.5px; }
+  .erd-field.pk .fname { color: var(--primary); font-weight: 700; }
+  .erd-field.fk .fname { color: var(--green); }
+  .erd-field.fk .fname::before { content: "FK "; font-size: 9px; opacity: 0.6; }
+  .erd-field.pk .fname::before { content: "PK "; font-size: 9px; opacity: 0.6; }
+
+  /* ── FLOW ── */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 16px 0;
+    position: relative;
+  }
+
+  .flow-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 0 0 0 0;
+    position: relative;
+  }
+
+  .flow-step:not(:last-child) {
+    padding-bottom: 6px;
+  }
+
+  .flow-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .flow-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .flow-line {
+    width: 1px;
+    flex: 1;
+    background: var(--border);
+    min-height: 20px;
+    margin: 2px 0;
+  }
+
+  .flow-content {
+    padding: 4px 0 20px;
+  }
+
+  .flow-content strong { font-size: 13.5px; }
+  .flow-content p { font-size: 12.5px; margin-top: 2px; margin-bottom: 0; }
+
+  /* ── TABLE ── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 12px 0 20px;
+  }
+
+  .data-table th {
+    text-align: left;
+    padding: 8px 14px;
+    background: var(--surface-2);
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .data-table td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--surface-2);
+    color: var(--muted);
+    vertical-align: top;
+  }
+
+  .data-table td:first-child { color: var(--text); font-weight: 500; font-family: "Cascadia Code", Consolas, monospace; font-size: 12px; }
+
+  .data-table tr:last-child td { border-bottom: none; }
+
+  /* ── ROLE MATRIX ── */
+  .role-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  .role-card {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .role-card-head {
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .role-card-head.admin   { background: var(--red-lt);   color: var(--red); }
+  .role-card-head.manager { background: var(--amber-lt); color: var(--amber); }
+  .role-card-head.emp     { background: var(--green-lt); color: var(--green); }
+
+  .role-card ul {
+    list-style: none;
+    padding: 10px 16px;
+    background: var(--surface);
+  }
+
+  .role-card ul li {
+    font-size: 12px;
+    color: var(--muted);
+    padding: 3px 0;
+    border-bottom: 1px solid var(--surface-2);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .role-card ul li::before {
+    content: "→";
+    color: var(--border);
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+
+  .role-card ul li:last-child { border-bottom: none; }
+
+  /* ── CALLOUT ── */
+  .callout {
+    display: flex;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 4px;
+    margin: 14px 0;
+    font-size: 13px;
+  }
+
+  .callout-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .callout p { margin: 0; line-height: 1.5; }
+
+  .callout.blue   { background: var(--primary-lt); border: 1px solid #BFDBFE; }
+  .callout.blue p { color: #1E3A8A; }
+  .callout.amber  { background: var(--amber-lt); border: 1px solid #FDE68A; }
+  .callout.amber p { color: #78350F; }
+  .callout.green  { background: var(--green-lt); border: 1px solid #A7F3D0; }
+  .callout.green p { color: #064E3B; }
+
+  /* ── INLINE ROUTE ── */
+  .route-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--surface-2);
+    font-size: 13px;
+  }
+
+  .method {
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    width: 44px;
+    text-align: center;
+  }
+
+  .m-get    { background: var(--green-lt);   color: var(--green); }
+  .m-post   { background: var(--primary-lt); color: var(--primary); }
+  .m-patch  { background: var(--amber-lt);   color: var(--amber); }
+  .m-delete { background: var(--red-lt);     color: var(--red); }
+
+  .route-path {
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 12px;
+    color: var(--text);
+    flex-shrink: 0;
+    min-width: 240px;
+  }
+
+  .route-desc { color: var(--muted); font-size: 12px; }
+
+  /* ── ARCH DIAGRAM ── */
+  .arch {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin: 16px 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .arch-layer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12.5px;
+  }
+
+  .arch-layer:last-child { border-bottom: none; }
+
+  .arch-layer-label {
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 2px;
+    width: 90px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .l-client  { background: #6D28D9; }
+  .l-route   { background: var(--primary); }
+  .l-mid     { background: #0F766E; }
+  .l-ctrl    { background: #B45309; }
+  .l-db      { background: #334155; }
+  .l-socket  { background: #9333EA; }
+
+  .arch-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .arch-chip {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 2px 8px;
+    font-size: 11.5px;
+    font-family: "Cascadia Code", Consolas, monospace;
+    color: var(--text);
+  }
+
+  .arch-arrow {
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    color: var(--border);
+    font-size: 16px;
+  }
+</style>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-title">
+    <h1>WorkTrack — Full Project Guide</h1>
+    <p>A complete reference covering database design, architecture, authentication, attendance, leave management, real-time features, and every API route.</p>
+  </div>
+  <div class="hero-stat">
+    <div class="num">5</div>
+    <div class="label">DB Tables</div>
+  </div>
+  <div class="hero-stat">
+    <div class="num">3</div>
+    <div class="label">User Roles</div>
+  </div>
+  <div class="hero-stat">
+    <div class="num">28</div>
+    <div class="label">API Endpoints</div>
+  </div>
+  <div class="hero-stat">
+    <div class="num">6</div>
+    <div class="label">Leave Types</div>
+  </div>
+  <div class="hero-stat">
+    <div class="num">11</div>
+    <div class="label">Middlewares</div>
+  </div>
+  <div class="hero-stat">
+    <div class="num">RT</div>
+    <div class="label">Socket.io</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <h1>WorkTrack</h1>
+    <p>Project Guide</p>
+  </div>
+  <span class="nav-section">Overview</span>
+  <a href="#overview">What is this project?</a>
+  <a href="#stack">Tech Stack</a>
+  <a href="#architecture">Architecture (MVC)</a>
+
+  <span class="nav-section">Database</span>
+  <a href="#db-design">DB Design & Tables</a>
+  <a href="#db-relations">Relationships</a>
+
+  <span class="nav-section">Backend Features</span>
+  <a href="#auth">Authentication</a>
+  <a href="#rbac">RBAC — Role System</a>
+  <a href="#attendance">Attendance System</a>
+  <a href="#leave">Leave Management</a>
+  <a href="#reports">Reports & Dashboard</a>
+  <a href="#socket">Socket.io Real-time</a>
+
+  <span class="nav-section">Security</span>
+  <a href="#security">All Security Features</a>
+
+  <span class="nav-section">API</span>
+  <a href="#api">All API Routes</a>
+</nav>
+
+<!-- MAIN -->
+<main>
+
+  <!-- OVERVIEW -->
+  <section id="overview">
+    <div class="section-label">01 — Overview</div>
+    <h2>What is WorkTrack?</h2>
+    <p>WorkTrack is a <strong>workforce management system</strong> built with Node.js + Express on the backend and React on the frontend. It manages three types of users — Admin, Manager, and Employee — each with different permissions and views.</p>
+
+    <div class="card-grid">
+      <div class="card highlight-red">
+        <strong>Admin</strong>
+        <p style="margin-top:6px">Full access. Creates departments, manages all employees, views org-wide reports, approves any leave.</p>
+      </div>
+      <div class="card highlight-amber">
+        <strong>Manager</strong>
+        <p style="margin-top:6px">Scoped access. Sees only their assigned team. Approves/rejects their team's leaves.</p>
+      </div>
+      <div class="card highlight-green">
+        <strong>Employee</strong>
+        <p style="margin-top:6px">Personal access. Marks attendance, applies for leave, sees own history and balance.</p>
+      </div>
+    </div>
+
+    <h3>Core Features</h3>
+    <table class="data-table">
+      <thead><tr><th>Feature</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td>Attendance</td><td>Check-in/out with GPS location capture. Live timer synced via Socket.io.</td></tr>
+        <tr><td>Leave Management</td><td>Apply for 6 leave types. Manager/Admin approve/reject. Balance auto-deducted.</td></tr>
+        <tr><td>Real-time Updates</td><td>Socket.io pushes events instantly — no page refresh needed.</td></tr>
+        <tr><td>RBAC</td><td>Role-based access + manager scope guard prevents data leaks between teams.</td></tr>
+        <tr><td>Reports</td><td>Admin dashboard, monthly reports, leave balance summaries, attendance analytics.</td></tr>
+        <tr><td>Security</td><td>JWT + refresh tokens, account lockout, rate limiting, Helmet, input validation.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- TECH STACK -->
+  <section id="stack">
+    <div class="section-label">02 — Tech Stack</div>
+    <h2>Technologies Used</h2>
+
+    <div class="card-grid">
+      <div class="card">
+        <h3 class="sub">Backend</h3>
+        <table class="data-table">
+          <tbody>
+            <tr><td>Node.js</td><td>Runtime environment</td></tr>
+            <tr><td>Express.js</td><td>HTTP server framework</td></tr>
+            <tr><td>Prisma ORM</td><td>Database queries (type-safe)</td></tr>
+            <tr><td>MySQL 8</td><td>Relational database</td></tr>
+            <tr><td>Socket.io</td><td>Real-time WebSocket server</td></tr>
+            <tr><td>JWT</td><td>Token-based authentication</td></tr>
+            <tr><td>bcryptjs</td><td>Password & token hashing</td></tr>
+            <tr><td>Joi</td><td>Request body validation</td></tr>
+            <tr><td>Winston</td><td>Structured logging</td></tr>
+            <tr><td>Helmet</td><td>HTTP security headers</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3 class="sub">Frontend</h3>
+        <table class="data-table">
+          <tbody>
+            <tr><td>React 18</td><td>UI library</td></tr>
+            <tr><td>Redux Toolkit</td><td>Global state (auth, attendance, leave)</td></tr>
+            <tr><td>React Router</td><td>Client-side routing</td></tr>
+            <tr><td>Axios</td><td>HTTP client (API calls)</td></tr>
+            <tr><td>Socket.io-client</td><td>WebSocket connection</td></tr>
+            <tr><td>Tailwind CSS</td><td>Utility-first styling</td></tr>
+            <tr><td>Vite</td><td>Build tool / dev server</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ARCHITECTURE -->
+  <section id="architecture">
+    <div class="section-label">03 — Architecture</div>
+    <h2>MVC Pattern & Folder Structure</h2>
+    <p>The server follows a strict <strong>MVC (Model-View-Controller)</strong> pattern. Each layer has one responsibility.</p>
+
+    <div class="arch">
+      <div class="arch-layer">
+        <span class="arch-layer-label l-client">Client</span>
+        <div class="arch-items">
+          <span class="arch-chip">React App</span>
+          <span class="arch-chip">Axios HTTP</span>
+          <span class="arch-chip">Socket.io-client</span>
+        </div>
+      </div>
+      <div class="arch-layer" style="background:#F8FAFC; justify-content:center; font-size:11px; color:var(--muted); padding:6px">
+        ↓ HTTP Request / WebSocket Connection ↓
+      </div>
+      <div class="arch-layer">
+        <span class="arch-layer-label l-mid">Middleware</span>
+        <div class="arch-items">
+          <span class="arch-chip">helmet()</span>
+          <span class="arch-chip">cors()</span>
+          <span class="arch-chip">rateLimiter</span>
+          <span class="arch-chip">authenticate</span>
+          <span class="arch-chip">authorize(role)</span>
+          <span class="arch-chip">validate(schema)</span>
+        </div>
+      </div>
+      <div class="arch-layer" style="background:#F8FAFC; justify-content:center; font-size:11px; color:var(--muted); padding:6px">
+        ↓ req passes through each middleware in order ↓
+      </div>
+      <div class="arch-layer">
+        <span class="arch-layer-label l-route">Routes</span>
+        <div class="arch-items">
+          <span class="arch-chip">auth.routes.js</span>
+          <span class="arch-chip">user.routes.js</span>
+          <span class="arch-chip">attendance.routes.js</span>
+          <span class="arch-chip">leave.routes.js</span>
+          <span class="arch-chip">report.routes.js</span>
+          <span class="arch-chip">department.routes.js</span>
+        </div>
+      </div>
+      <div class="arch-layer" style="background:#F8FAFC; justify-content:center; font-size:11px; color:var(--muted); padding:6px">
+        ↓ route dispatches to the right controller function ↓
+      </div>
+      <div class="arch-layer">
+        <span class="arch-layer-label l-ctrl">Controllers</span>
+        <div class="arch-items">
+          <span class="arch-chip">auth.controller.js</span>
+          <span class="arch-chip">user.controller.js</span>
+          <span class="arch-chip">attendance.controller.js</span>
+          <span class="arch-chip">leave.controller.js</span>
+          <span class="arch-chip">report.controller.js</span>
+        </div>
+      </div>
+      <div class="arch-layer" style="background:#F8FAFC; justify-content:center; font-size:11px; color:var(--muted); padding:6px">
+        ↓ controller reads/writes via Prisma ORM ↓
+      </div>
+      <div class="arch-layer">
+        <span class="arch-layer-label l-db">Database</span>
+        <div class="arch-items">
+          <span class="arch-chip">prisma.config.js</span>
+          <span class="arch-chip">schema.prisma</span>
+          <span class="arch-chip">MySQL 8</span>
+        </div>
+      </div>
+    </div>
+
+    <h3>What each layer does</h3>
+    <table class="data-table">
+      <thead><tr><th>Layer</th><th>File Location</th><th>Job</th></tr></thead>
+      <tbody>
+        <tr><td>Routes</td><td>src/routes/*.routes.js</td><td>Defines which URL maps to which controller function. Also applies middlewares per route.</td></tr>
+        <tr><td>Middleware</td><td>src/middlewares/*.js</td><td>Runs before the controller. Checks auth, validates body, checks rate limit.</td></tr>
+        <tr><td>Controllers</td><td>src/controllers/*.controller.js</td><td>Business logic. Reads from DB, builds the response, emits socket events.</td></tr>
+        <tr><td>Validations</td><td>src/validations/*.validation.js</td><td>Joi schemas that define what fields are allowed in request body.</td></tr>
+        <tr><td>Utils</td><td>src/utils/</td><td>AppError class + apiResponse helpers used everywhere.</td></tr>
+        <tr><td>Config</td><td>src/config/</td><td>Logger, Prisma client, Socket.io setup — one-time initializations.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- DB DESIGN -->
+  <section id="db-design">
+    <div class="section-label">04 — Database</div>
+    <h2>Database Design — All 5 Tables</h2>
+    <p>The database has <strong>5 tables</strong> with specific relationships between them. Every table is defined in <code>schema.prisma</code> and managed by Prisma ORM.</p>
+
+    <div class="erd">
+      <!-- users -->
+      <div class="erd-table">
+        <div class="erd-table-head blue">users</div>
+        <div class="erd-field pk"><span class="fname">id</span><span class="ftype">INT AI</span></div>
+        <div class="erd-field"><span class="fname">name</span><span class="ftype">VARCHAR(100)</span></div>
+        <div class="erd-field"><span class="fname">email</span><span class="ftype">VARCHAR(150) UNIQUE</span></div>
+        <div class="erd-field"><span class="fname">password</span><span class="ftype">VARCHAR(255)</span></div>
+        <div class="erd-field"><span class="fname">role</span><span class="ftype">ENUM</span></div>
+        <div class="erd-field"><span class="fname">employeeId</span><span class="ftype">VARCHAR(20) UNIQUE</span></div>
+        <div class="erd-field fk"><span class="fname">departmentId</span><span class="ftype">→ departments</span></div>
+        <div class="erd-field fk"><span class="fname">managerId</span><span class="ftype">→ users (self)</span></div>
+        <div class="erd-field"><span class="fname">isActive</span><span class="ftype">BOOLEAN</span></div>
+        <div class="erd-field"><span class="fname">failedLogins</span><span class="ftype">INT</span></div>
+        <div class="erd-field"><span class="fname">lockUntil</span><span class="ftype">DATETIME?</span></div>
+        <div class="erd-field"><span class="fname">refreshToken</span><span class="ftype">TEXT (hashed)</span></div>
+        <div class="erd-field"><span class="fname">lastLogin</span><span class="ftype">DATETIME?</span></div>
+      </div>
+
+      <!-- departments -->
+      <div class="erd-table">
+        <div class="erd-table-head green">departments</div>
+        <div class="erd-field pk"><span class="fname">id</span><span class="ftype">INT AI</span></div>
+        <div class="erd-field"><span class="fname">name</span><span class="ftype">VARCHAR(100) UNIQUE</span></div>
+        <div class="erd-field"><span class="fname">description</span><span class="ftype">TEXT?</span></div>
+        <div class="erd-field fk"><span class="fname">headId</span><span class="ftype">→ users</span></div>
+        <div class="erd-field"><span class="fname">isActive</span><span class="ftype">BOOLEAN</span></div>
+        <div class="erd-field"><span class="fname">createdAt</span><span class="ftype">DATETIME</span></div>
+      </div>
+
+      <!-- attendances -->
+      <div class="erd-table">
+        <div class="erd-table-head amber">attendances</div>
+        <div class="erd-field pk"><span class="fname">id</span><span class="ftype">INT AI</span></div>
+        <div class="erd-field fk"><span class="fname">employeeId</span><span class="ftype">→ users</span></div>
+        <div class="erd-field"><span class="fname">date</span><span class="ftype">DATE</span></div>
+        <div class="erd-field"><span class="fname">checkInTime</span><span class="ftype">DATETIME?</span></div>
+        <div class="erd-field"><span class="fname">checkInLat</span><span class="ftype">DECIMAL(10,8)</span></div>
+        <div class="erd-field"><span class="fname">checkInLng</span><span class="ftype">DECIMAL(11,8)</span></div>
+        <div class="erd-field"><span class="fname">checkInAddress</span><span class="ftype">VARCHAR(300)</span></div>
+        <div class="erd-field"><span class="fname">checkOutTime</span><span class="ftype">DATETIME?</span></div>
+        <div class="erd-field"><span class="fname">checkOutLat</span><span class="ftype">DECIMAL</span></div>
+        <div class="erd-field"><span class="fname">checkOutLng</span><span class="ftype">DECIMAL</span></div>
+        <div class="erd-field"><span class="fname">workingHours</span><span class="ftype">DECIMAL(5,2)</span></div>
+        <div class="erd-field"><span class="fname">status</span><span class="ftype">ENUM</span></div>
+        <div class="erd-field" style="font-size:10px; padding:6px 14px; color:var(--muted)">UNIQUE (employeeId, date)</div>
+      </div>
+
+      <!-- leaves -->
+      <div class="erd-table">
+        <div class="erd-table-head purple">leaves</div>
+        <div class="erd-field pk"><span class="fname">id</span><span class="ftype">INT AI</span></div>
+        <div class="erd-field fk"><span class="fname">employeeId</span><span class="ftype">→ users</span></div>
+        <div class="erd-field"><span class="fname">type</span><span class="ftype">ENUM (6 types)</span></div>
+        <div class="erd-field"><span class="fname">startDate</span><span class="ftype">DATE</span></div>
+        <div class="erd-field"><span class="fname">endDate</span><span class="ftype">DATE</span></div>
+        <div class="erd-field"><span class="fname">duration</span><span class="ftype">DECIMAL(4,1)</span></div>
+        <div class="erd-field"><span class="fname">reason</span><span class="ftype">TEXT</span></div>
+        <div class="erd-field"><span class="fname">status</span><span class="ftype">PENDING|APPROVED|REJECTED</span></div>
+        <div class="erd-field fk"><span class="fname">reviewedById</span><span class="ftype">→ users</span></div>
+        <div class="erd-field"><span class="fname">reviewedAt</span><span class="ftype">DATETIME?</span></div>
+        <div class="erd-field"><span class="fname">comments</span><span class="ftype">TEXT?</span></div>
+      </div>
+
+      <!-- leave_balances -->
+      <div class="erd-table">
+        <div class="erd-table-head teal">leave_balances</div>
+        <div class="erd-field pk"><span class="fname">id</span><span class="ftype">INT AI</span></div>
+        <div class="erd-field fk"><span class="fname">employeeId</span><span class="ftype">→ users</span></div>
+        <div class="erd-field"><span class="fname">year</span><span class="ftype">INT</span></div>
+        <div class="erd-field"><span class="fname">casualTotal / Used</span><span class="ftype">INT (default 12)</span></div>
+        <div class="erd-field"><span class="fname">sickTotal / Used</span><span class="ftype">INT (default 10)</span></div>
+        <div class="erd-field"><span class="fname">halfDayTotal / Used</span><span class="ftype">INT (default 6)</span></div>
+        <div class="erd-field"><span class="fname">wfhTotal / Used</span><span class="ftype">INT (default 24)</span></div>
+        <div class="erd-field" style="font-size:10px; padding:6px 14px; color:var(--muted)">UNIQUE (employeeId, year)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DB RELATIONS -->
+  <section id="db-relations">
+    <div class="section-label">05 — Database</div>
+    <h2>Table Relationships Explained</h2>
+
+    <table class="data-table">
+      <thead><tr><th>Relationship</th><th>Type</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>users → departments</td><td>Many-to-One</td><td>Many employees belong to one department. <code>SET NULL</code> on dept delete (employee record survives).</td></tr>
+        <tr><td>users → users (self)</td><td>Self-referential</td><td><code>managerId</code> points to another row in the same users table. One manager has many employees.</td></tr>
+        <tr><td>departments → users (head)</td><td>One-to-One</td><td>A department can have one head employee. <code>headId</code> is a back-reference to users.</td></tr>
+        <tr><td>users → attendances</td><td>One-to-Many</td><td>One employee has many attendance records. <code>Cascade</code> delete — attendance deleted if employee deleted.</td></tr>
+        <tr><td>users → leaves</td><td>One-to-Many</td><td>One employee can apply for many leaves. Also has a separate <code>reviewedBy</code> relation (who approved).</td></tr>
+        <tr><td>users → leave_balances</td><td>One-to-Many</td><td>One balance row per employee per year. <code>UNIQUE(employeeId, year)</code> prevents duplicates.</td></tr>
+        <tr><td>attendances unique constraint</td><td>Composite UNIQUE</td><td><code>UNIQUE(employeeId, date)</code> — only ONE attendance row per employee per day. Prevents double check-in.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout amber">
+      <span class="callout-icon">&#9888;</span>
+      <p><strong>Important pattern:</strong> When a manager is deleted, all their employees' <code>managerId</code> becomes NULL (not deleted). When a department is deleted, users' <code>departmentId</code> becomes NULL. This is <code>onDelete: SetNull</code> — data is never accidentally lost.</p>
+    </div>
+  </section>
+
+  <!-- AUTH -->
+  <section id="auth">
+    <div class="section-label">06 — Authentication</div>
+    <h2>Authentication System</h2>
+    <p>Uses a <strong>dual-token strategy</strong> — a short-lived access token for API calls and a long-lived refresh token stored in an HttpOnly cookie.</p>
+
+    <h3>Login Flow</h3>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
+        <div class="flow-content"><strong>POST /api/v1/auth/login</strong><p>Email + password sent. Rate limited to 5 attempts per 15 min.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
+        <div class="flow-content"><strong>Account lock check</strong><p>If <code>lockUntil</code> is in the future → reject with minutes remaining. HTTP 423.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">3</div><div class="flow-line"></div></div>
+        <div class="flow-content"><strong>bcrypt.compare(password, hash)</strong><p>If wrong → increment <code>failedLogins</code>. At 5 failures → lock for 30 minutes.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">4</div><div class="flow-line"></div></div>
+        <div class="flow-content"><strong>Generate two tokens</strong><p>Access token (15 min), Refresh token (7 days). Refresh token is bcrypt-hashed before saving to DB.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">5</div></div>
+        <div class="flow-content"><strong>Response</strong><p>Access token in JSON body. Refresh token in HttpOnly cookie (JS cannot read it).</p></div>
+      </div>
+    </div>
+
+    <h3>Token Refresh Flow</h3>
+    <div class="code-block">
+<span class="cm">// POST /api/v1/auth/refresh</span>
+<span class="kw">const</span> token = req.cookies?.refreshToken   <span class="cm">// read from cookie</span>
+jwt.verify(token, JWT_REFRESH_SECRET)       <span class="cm">// verify signature</span>
+bcrypt.compare(token, user.refreshToken)    <span class="cm">// compare against stored hash</span>
+<span class="cm">// Issue new access token + rotate refresh token</span></div>
+
+    <div class="callout blue">
+      <span class="callout-icon">&#8505;</span>
+      <p><strong>Why hash the refresh token?</strong> If your database leaks, the attacker gets only a bcrypt hash — they cannot use it to create new access tokens. The real token is only in the user's cookie.</p>
+    </div>
+
+    <h3>Protected Route Flow</h3>
+    <div class="code-block">
+<span class="cm">// Every protected route runs authenticate middleware:</span>
+<span class="kw">const</span> token = req.headers.authorization.split(<span class="str">' '</span>)[<span class="num">1</span>]
+jwt.verify(token, JWT_SECRET)               <span class="cm">// verify + decode</span>
+prisma.user.findUnique({ where: { id } })   <span class="cm">// confirm user still exists</span>
+<span class="kw">if</span> (!user.isActive) → <span class="fn">403</span>                 <span class="cm">// check account active</span>
+req.user = user                             <span class="cm">// attach to request</span></div>
+  </section>
+
+  <!-- RBAC -->
+  <section id="rbac">
+    <div class="section-label">07 — Access Control</div>
+    <h2>RBAC — Role-Based Access Control</h2>
+    <p>Two layers of access control protect every endpoint. Role guard checks WHO you are. Scope guard checks WHO you can access.</p>
+
+    <div class="role-grid">
+      <div class="role-card">
+        <div class="role-card-head admin">ADMIN</div>
+        <ul>
+          <li>All employees across org</li>
+          <li>All attendance records</li>
+          <li>All leave requests</li>
+          <li>Create departments/users</li>
+          <li>Admin dashboard + reports</li>
+          <li>Manual attendance correction</li>
+        </ul>
+      </div>
+      <div class="role-card">
+        <div class="role-card-head manager">MANAGER</div>
+        <ul>
+          <li>Only their team (managerId check)</li>
+          <li>Team attendance records</li>
+          <li>Team leave requests</li>
+          <li>Approve/reject team leaves</li>
+          <li>Team reports</li>
+        </ul>
+      </div>
+      <div class="role-card">
+        <div class="role-card-head emp">EMPLOYEE</div>
+        <ul>
+          <li>Own profile only</li>
+          <li>Own attendance history</li>
+          <li>Apply / cancel own leave</li>
+          <li>View own leave balance</li>
+          <li>Live timer (check-in/out)</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>How the code works</h3>
+    <div class="code-block">
+<span class="cm">// Layer 1 — Role Guard</span>
+<span class="cm">// Usage: router.get('/users', authenticate, authorize('ADMIN'), ...)</span>
+<span class="kw">const</span> <span class="fn">authorize</span> = (...roles) => (req, res, next) => {
+  <span class="kw">if</span> (!roles.includes(req.user.role)) → <span class="fn">403</span>
+  next()
+}
+
+<span class="cm">// Layer 2 — Manager Scope Guard</span>
+<span class="cm">// Checks that target employee belongs to this manager</span>
+<span class="kw">const</span> target = <span class="kw">await</span> prisma.user.findFirst({
+  where: { id: targetId, managerId: req.user.id }
+})
+<span class="kw">if</span> (!target) → <span class="fn">403</span> <span class="cm">// "Employee not in your team"</span></div>
+
+    <div class="callout green">
+      <span class="callout-icon">&#10003;</span>
+      <p><strong>Admins bypass scope guard automatically.</strong> The scope guard has <code>if (req.user.role === 'ADMIN') return next()</code> at the top — admins can access any employee without a managerId check.</p>
+    </div>
+  </section>
+
+  <!-- ATTENDANCE -->
+  <section id="attendance">
+    <div class="section-label">08 — Attendance</div>
+    <h2>Attendance System</h2>
+    <p>Employees check in and out once per day. The system captures GPS location at both events and calculates working hours automatically.</p>
+
+    <h3>Check-In Flow</h3>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
+        <div class="flow-content"><strong>Browser captures GPS</strong><p>Frontend uses <code>navigator.geolocation</code> to get lat/lng before the API call.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
+        <div class="flow-content"><strong>POST /api/v1/attendance/check-in</strong><p>Body: <code>&#123; lat, lng, address &#125;</code>. Server validates. Checks if already checked in today.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">3</div><div class="flow-line"></div></div>
+        <div class="flow-content"><strong>Prisma upsert</strong><p>Creates or updates the attendance row for today. <code>UNIQUE(employeeId, date)</code> ensures one row per day.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">4</div></div>
+        <div class="flow-content"><strong>Socket.io event emitted</strong><p><code>emitToUser(employeeId, 'attendance:checkedIn', &#123; checkInTime &#125;)</code> — live timer starts instantly on screen.</p></div>
+      </div>
+    </div>
+
+    <h3>Live Timer — How it survives page refresh</h3>
+    <div class="code-block">
+<span class="cm">// GET /api/v1/attendance/live-timer</span>
+<span class="cm">// Called when employee's page loads</span>
+<span class="kw">const</span> record = <span class="kw">await</span> prisma.attendance.findUnique(...)
+
+<span class="kw">return</span> {
+  active:      <span class="kw">true</span>,
+  checkInTime: record.checkInTime,
+  elapsedMs:   Date.now() - <span class="kw">new</span> Date(record.checkInTime).getTime()
+  <span class="cm">// ↑ Frontend resumes timer from this exact ms offset</span>
+}</div>
+
+    <h3>Check-Out Calculation</h3>
+    <div class="code-block">
+<span class="kw">const</span> workingHours = parseFloat(
+  ((checkOutTime - existing.checkInTime) / <span class="num">3600000</span>).toFixed(<span class="num">2</span>)
+)
+<span class="cm">// 3600000 = milliseconds in one hour</span>
+<span class="cm">// e.g. 9 hours 30 min = 9.50 working hours</span></div>
+
+    <h3>Attendance Statuses</h3>
+    <table class="data-table">
+      <thead><tr><th>Status</th><th>When set</th></tr></thead>
+      <tbody>
+        <tr><td>PRESENT</td><td>Employee checks in normally</td></tr>
+        <tr><td>ABSENT</td><td>No check-in for that day (set by admin/cron)</td></tr>
+        <tr><td>HALF_DAY</td><td>Half-day leave approved</td></tr>
+        <tr><td>LEAVE</td><td>Casual or Sick leave approved</td></tr>
+        <tr><td>WFH</td><td>Work from home leave approved</td></tr>
+        <tr><td>FIELD_VISIT</td><td>Field visit leave approved</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- LEAVE -->
+  <section id="leave">
+    <div class="section-label">09 — Leave Management</div>
+    <h2>Leave Management System</h2>
+
+    <h3>Leave Types</h3>
+    <div class="card-grid">
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Type</th><th>Balance Deducted?</th><th>Default Total</th></tr></thead>
+          <tbody>
+            <tr><td>CASUAL</td><td><span class="badge badge-red">Yes</span></td><td>12 days/year</td></tr>
+            <tr><td>SICK</td><td><span class="badge badge-red">Yes</span></td><td>10 days/year</td></tr>
+            <tr><td>HALF_DAY</td><td><span class="badge badge-red">Yes</span></td><td>6 days/year</td></tr>
+            <tr><td>WFH</td><td><span class="badge badge-red">Yes</span></td><td>24 days/year</td></tr>
+            <tr><td>EARLY_LEAVE</td><td><span class="badge badge-green">No</span></td><td>—</td></tr>
+            <tr><td>FIELD_VISIT</td><td><span class="badge badge-green">No</span></td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h3>Leave Application Flow</h3>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
+        <div class="flow-content"><strong>Overlap check</strong><p>Checks if employee already has a PENDING or APPROVED leave that overlaps the requested date range.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
+        <div class="flow-content"><strong>Balance check</strong><p>Counts working days (excludes weekends). Checks if <code>total - used >= requested days</code>.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">3</div><div class="flow-line"></div></div>
+        <div class="flow-content"><strong>Leave created</strong><p>Saved with status PENDING. Socket event sent to manager + admin rooms.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">4</div><div class="flow-line"></div></div>
+        <div class="flow-content"><strong>Manager/Admin approves</strong><p>Three things happen inside a single <code>prisma.$transaction</code> — atomically.</p></div>
+      </div>
+    </div>
+
+    <h3>Approval Transaction — 3 atomic operations</h3>
+    <div class="code-block">
+<span class="kw">await</span> prisma.$transaction(<span class="kw">async</span> (tx) => {
+
+  <span class="cm">// 1. Update leave status → APPROVED</span>
+  <span class="kw">await</span> tx.leave.update({ data: { status: <span class="str">'APPROVED'</span>, reviewedById, reviewedAt } })
+
+  <span class="cm">// 2. Create attendance row for each day in the leave range</span>
+  <span class="kw">for</span> (<span class="kw">const</span> day <span class="kw">of</span> leaveDays) {
+    <span class="kw">if</span> (isWeekend(day)) <span class="kw">continue</span>  <span class="cm">// skip Saturday/Sunday</span>
+    <span class="kw">await</span> tx.attendance.upsert({
+      data: { status: <span class="str">'LEAVE'</span>, note: <span class="str">'CASUAL leave approved'</span> }
+    })
+  }
+
+  <span class="cm">// 3. Deduct balance (only for types that deduct)</span>
+  <span class="kw">await</span> tx.leaveBalance.updateMany({
+    data: { casualUsed: { increment: workingDays } }
+  })
+})</div>
+
+    <div class="callout blue">
+      <span class="callout-icon">&#8505;</span>
+      <p><strong>Why use <code>$transaction</code>?</strong> All three DB operations either succeed together or all fail together. If step 3 fails, steps 1 and 2 are automatically rolled back. This prevents leave being marked approved but balance not deducted.</p>
+    </div>
+
+    <h3>Leave → Attendance Status Mapping</h3>
+    <table class="data-table">
+      <thead><tr><th>Leave Type</th><th>Attendance Status Created</th></tr></thead>
+      <tbody>
+        <tr><td>CASUAL / SICK</td><td><span class="badge badge-gray">LEAVE</span></td></tr>
+        <tr><td>HALF_DAY</td><td><span class="badge badge-amber">HALF_DAY</span></td></tr>
+        <tr><td>EARLY_LEAVE</td><td><span class="badge badge-green">PRESENT</span> (still counts as present)</td></tr>
+        <tr><td>WFH</td><td><span class="badge badge-blue">WFH</span></td></tr>
+        <tr><td>FIELD_VISIT</td><td><span class="badge badge-blue">FIELD_VISIT</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- REPORTS -->
+  <section id="reports">
+    <div class="section-label">10 — Reports</div>
+    <h2>Reports & Admin Dashboard</h2>
+    <p>All report queries run in parallel using <code>Promise.all</code> for performance.</p>
+
+    <table class="data-table">
+      <thead><tr><th>Endpoint</th><th>Who</th><th>Returns</th></tr></thead>
+      <tbody>
+        <tr><td>GET /reports/dashboard</td><td>Admin</td><td>Total employees, present today, on leave, pending leaves, monthly attendance breakdown by status</td></tr>
+        <tr><td>GET /reports/attendance-summary</td><td>Admin/Manager</td><td>Per-employee count of each status (PRESENT/ABSENT/LEAVE) for a date range</td></tr>
+        <tr><td>GET /reports/leave-summary</td><td>Admin/Manager</td><td>Leave balance remaining for each employee (total vs used per type) for a given year</td></tr>
+        <tr><td>GET /reports/monthly</td><td>Admin</td><td>Attendance breakdown by status + leave breakdown by type for any month/year</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Dashboard query uses 6 parallel DB calls</h3>
+    <div class="code-block">
+<span class="kw">const</span> [totalEmployees, totalDepts, presentToday,
+      pendingLeaves, leavesToday, monthlySummary]
+  = <span class="kw">await</span> Promise.all([
+    prisma.user.count(...),
+    prisma.department.count(...),
+    prisma.attendance.count(...),   <span class="cm">// present today</span>
+    prisma.leave.count(...),        <span class="cm">// pending approvals</span>
+    prisma.attendance.count(...),   <span class="cm">// on leave today</span>
+    prisma.attendance.groupBy(...)  <span class="cm">// monthly status breakdown</span>
+  ])</div>
+    <p><strong>Promise.all</strong> runs all 6 queries at the same time. Dashboard loads as fast as the slowest single query, not the sum of all 6.</p>
+  </section>
+
+  <!-- SOCKET -->
+  <section id="socket">
+    <div class="section-label">11 — Real-time</div>
+    <h2>Socket.io — Real-time Events</h2>
+
+    <h3>How the connection is established</h3>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
+        <div class="flow-content"><strong>Frontend connects after login</strong><p><code>io('http://localhost:5000', &#123; auth: &#123; token: accessToken &#125; &#125;)</code></p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
+        <div class="flow-content"><strong>Server JWT middleware fires</strong><p>Verifies the token. Attaches <code>socket.userId</code> and <code>socket.userRole</code>.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">3</div><div class="flow-line"></div></div>
+        <div class="flow-content"><strong>User joins their private room</strong><p><code>socket.join('user:5')</code>. Admins also join the <code>'admin'</code> broadcast room.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">4</div></div>
+        <div class="flow-content"><strong>Connection stays open</strong><p>One persistent connection for the entire session. Server can push events any time.</p></div>
+      </div>
+    </div>
+
+    <h3>All events in this project</h3>
+    <table class="data-table">
+      <thead><tr><th>Event Name</th><th>Emitted by</th><th>Who receives it</th><th>When</th></tr></thead>
+      <tbody>
+        <tr><td>attendance:checkedIn</td><td>checkIn controller</td><td>That employee only</td><td>Successful check-in</td></tr>
+        <tr><td>attendance:checkedOut</td><td>checkOut controller</td><td>That employee only</td><td>Successful check-out</td></tr>
+        <tr><td>leave:newRequest</td><td>applyLeave controller</td><td>Employee's manager + admin room</td><td>Leave application submitted</td></tr>
+        <tr><td>leave:approved</td><td>approveLeave controller</td><td>That employee only</td><td>Manager/Admin approves leave</td></tr>
+        <tr><td>leave:rejected</td><td>rejectLeave controller</td><td>That employee only</td><td>Manager/Admin rejects leave</td></tr>
+      </tbody>
+    </table>
+
+    <h3>emitToUser vs emitToAdmin</h3>
+    <div class="code-block">
+<span class="cm">// Send to ONE specific user's private room</span>
+<span class="fn">emitToUser</span>(userId, <span class="str">'leave:approved'</span>, { leaveId })
+<span class="cm">// → Only employee with that ID receives this</span>
+
+<span class="cm">// Send to ALL connected admins</span>
+<span class="fn">emitToAdmin</span>(<span class="str">'leave:newRequest'</span>, { leave })
+<span class="cm">// → Every admin who is currently connected receives this</span></div>
+  </section>
+
+  <!-- SECURITY -->
+  <section id="security">
+    <div class="section-label">12 — Security</div>
+    <h2>All Security Features</h2>
+
+    <table class="data-table">
+      <thead><tr><th>Feature</th><th>Where</th><th>What it protects against</th></tr></thead>
+      <tbody>
+        <tr><td>helmet()</td><td>app.js</td><td>Sets 14 HTTP headers: XSS, clickjacking, MIME sniffing, HSTS, etc.</td></tr>
+        <tr><td>CORS whitelist</td><td>app.js</td><td>Only your React frontend URL can call the API.</td></tr>
+        <tr><td>Body size limit 10kb</td><td>app.js</td><td>Prevents large payload attacks (body bomb / DoS).</td></tr>
+        <tr><td>JWT access token (15min)</td><td>auth.controller.js</td><td>Short window limits damage if a token is stolen.</td></tr>
+        <tr><td>HttpOnly refresh cookie</td><td>auth.controller.js</td><td>Refresh token is never accessible by JavaScript — XSS can't steal it.</td></tr>
+        <tr><td>Hashed refresh token in DB</td><td>auth.controller.js</td><td>DB leak cannot be used to forge new tokens.</td></tr>
+        <tr><td>Account lockout</td><td>auth.controller.js</td><td>Brute-force password attacks — 5 wrong attempts = 30 min lock.</td></tr>
+        <tr><td>Rate limiter (5 login/15min)</td><td>rateLimiter.js</td><td>Automated credential stuffing attacks.</td></tr>
+        <tr><td>Rate limiter (100 API/15min)</td><td>rateLimiter.js</td><td>API abuse / scraping.</td></tr>
+        <tr><td>Joi stripUnknown</td><td>validate.js</td><td>Mass-assignment attacks — unknown fields are silently removed.</td></tr>
+        <tr><td>RBAC authorize()</td><td>rbac.middleware.js</td><td>Privilege escalation — employees can't call admin routes.</td></tr>
+        <tr><td>Manager scope guard</td><td>rbac.middleware.js</td><td>Horizontal privilege escalation — managers can't access other teams.</td></tr>
+        <tr><td>isActive check</td><td>auth.middleware.js</td><td>Deactivated accounts are rejected even if their token is valid.</td></tr>
+        <tr><td>No stack traces in prod</td><td>errorHandler.js</td><td>Internal server errors return "Internal server error", never the actual stack.</td></tr>
+        <tr><td>Password not in select</td><td>All DB queries</td><td>Every Prisma query explicitly excludes <code>password</code> field from response.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- API ROUTES -->
+  <section id="api">
+    <div class="section-label">13 — API Reference</div>
+    <h2>All API Routes</h2>
+    <p>Base URL: <code>/api/v1</code></p>
+
+    <h3>Auth Routes</h3>
+    <div class="card" style="padding: 12px 20px;">
+      <div class="route-row"><span class="method m-post">POST</span><span class="route-path">/auth/login</span><span class="route-desc">Login — returns access token + sets refresh cookie</span></div>
+      <div class="route-row"><span class="method m-post">POST</span><span class="route-path">/auth/logout</span><span class="route-desc">Logout — clears refresh token from DB and cookie</span></div>
+      <div class="route-row"><span class="method m-post">POST</span><span class="route-path">/auth/refresh</span><span class="route-desc">Get new access token using refresh cookie</span></div>
+      <div class="route-row"><span class="method m-get">GET</span><span class="route-path">/auth/me</span><span class="route-desc">Get own profile with department and manager info</span></div>
+      <div class="route-row"><span class="method m-patch">PATCH</span><span class="route-path">/auth/me/password</span><span class="route-desc">Change own password</span></div>
+    </div>
+
+    <h3>Attendance Routes</h3>
+    <div class="card" style="padding: 12px 20px;">
+      <div class="route-row"><span class="method m-post">POST</span><span class="route-path">/attendance/check-in</span><span class="route-desc"><span class="badge badge-green">Employee</span> Check in with GPS location</span></div>
+      <div class="route-row"><span class="method m-post">POST</span><span class="route-path">/attendance/check-out</span><span class="route-desc"><span class="badge badge-green">Employee</span> Check out — calculates working hours</span></div>
+      <div class="route-row"><span class="method m-get">GET</span><span class="route-path">/attendance/today</span><span class="route-desc"><span class="badge badge-green">Employee</span> Own today's record</span></div>
+      <div class="route-row"><span class="method m-get">GET</span><span class="route-path">/attendance/my</span><span class="route-desc"><span class="badge badge-green">Employee</span> Own attendance history (with filters + pagination)</span></div>
+      <div class="route-row"><span class="method m-get">GET</span><span class="route-path">/attendance/live-timer</span><span class="route-desc"><span class="badge badge-green">Employee</span> Elapsed ms since check-in for timer sync</span></div>
+      <div class="route-row"><span class="method m-get">GET</span><span class="route-path">/attendance/team</span><span class="route-desc"><span class="badge badge-amber">Manager</span> Team's attendance records</span></div>
+      <div class="route-row"><span class="method m-get">GET</span><span class="route-path">/attendance</span><span class="route-desc"><span class="badge badge-red">Admin</span> All employees' attendance</span></div>
+      <div class="route-row"><span class="method m-patch">PATCH</span><span class="route-path">/attendance/:id</span><span class="route-desc"><span class="badge badge-red">Admin</span> Manual attendance correction</span></div>
+    </div>
+
+    <h3>Leave Routes</h3>
+    <div class="card" style="padding: 12px 20px;">
+      <div class="route-row"><span class="method m-post">POST</span><span class="route-path">/leaves</span><span class="route-desc"><span class="badge badge-green">Employee</span> Apply for leave (checks overlap + balance)</span></div>
+      <div class="route-row"><span class="method m-get">GET</span><span class="route-path">/leaves/my</span><span class="route-desc"><span class="badge badge-green">Employee</span> Own leave history</span></div>
+      <div class="route-row"><span class="method m-get">GET</span><span class="route-path">/leaves/my-balance</span><span class="route-desc"><span class="badge badge-green">Employee</span> Remaining leave balance by type</span></div>
+      <div class="route-row"><span class="method m-delete">DEL</span><span class="route-path">/leaves/:id</span><span class="route-desc"><span class="badge badge-green">Employee</span> Cancel own pending leave</span></div>
+      <div class="route-row"><span class="method m-get">GET</span><span class="route-path">/leaves/pending</span><span class="route-desc"><span class="badge badge-amber">Manager</span> Team's pending leaves / <span class="badge badge-red">Admin</span> All pending</span></div>
+      <div class="route-row"><span class="method m-get">GET</span><span class="route-path">/leaves/team</span><span class="route-desc"><span class="badge badge-amber">Manager</span> All team leaves (any status)</span></div>
+      <div class="route-row"><span class="method m-get">GET</span><span class="route-path">/leaves</span><span class="route-desc"><span class="badge badge-red">Admin</span> All leaves across org</span></div>
+      <div class="route-row"><span class="method m-get">GET</span><span class="route-path">/leaves/:id</span><span class="route-desc">Any — scoped by role internally</span></div>
+      <div class="route-row"><span class="method m-post">POST</span><span class="route-path">/leaves/:id/approve</span><span class="route-desc"><span class="badge badge-amber">Manager</span> / <span class="badge badge-red">Admin</span> Approve (atomic transaction)</span></div>
+      <div class="route-row"><span class="method m-post">POST</span><span class="route-path">/leaves/:id/reject</span><span class="route-desc"><span class="badge badge-amber">Manager</span> / <span class="badge badge-red">Admin</span> Reject with comment</span></div>
+    </div>
+
+    <h3>Report Routes</h3>
+    <div class="card" style="padding: 12px 20px;">
+      <div class="route-row"><span class="method m-get">GET</span><span class="route-path">/reports/dashboard</span><span class="route-desc"><span class="badge badge-red">Admin</span> Org-wide stats (6 parallel DB queries)</span></div>
+      <div class="route-row"><span class="method m-get">GET</span><span class="route-path">/reports/attendance-summary</span><span class="route-desc"><span class="badge badge-amber">Manager</span> / <span class="badge badge-red">Admin</span> Per-employee status counts</span></div>
+      <div class="route-row"><span class="method m-get">GET</span><span class="route-path">/reports/leave-summary</span><span class="route-desc"><span class="badge badge-amber">Manager</span> / <span class="badge badge-red">Admin</span> Leave balance report by year</span></div>
+      <div class="route-row"><span class="method m-get">GET</span><span class="route-path">/reports/monthly</span><span class="route-desc"><span class="badge badge-red">Admin</span> Monthly attendance + leave breakdown</span></div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // Highlight active nav link on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        links.forEach(l => l.style.removeProperty('color'));
+        const active = document.querySelector(`nav a[href="#${entry.target.id}"]`);
+        if (active) {
+          active.style.color = 'var(--primary)';
+          active.style.borderLeftColor = 'var(--primary)';
+          active.style.background = 'var(--primary-lt)';
+        }
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body></html>

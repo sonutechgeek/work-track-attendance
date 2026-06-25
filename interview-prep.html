@@ -1,0 +1,1059 @@
+<!doctype html><html><head><script>(()=>{function B(j){if(window===top)return;if(j.type==="auxclick"&&j.button!==1)return;const y=j.composedPath?j.composedPath():[j.target];let k=null;for(let x=0;x<y.length;x++){const q=y[x];if(q&&q.matches&&q.matches("a[href],area[href]")){k=q;break}}if(!k&&j.target&&j.target.closest){k=j.target.closest("a[href],area[href]")}if(!k)return;const z=k.getAttribute("href");if(!z)return;let m,A;try{m=new URL(z,document.baseURI);A=new URL(document.baseURI).origin}catch{return}if((m.protocol==="http:"||m.protocol==="https:")&&m.origin!==A){j.preventDefault();parent.postMessage({__frame_nav:true,url:m.href},"*")}}addEventListener("click",B,true);addEventListener("auxclick",B,true);})();</script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style></head><body>
+<title>WorkTrack — Interview Prep</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #F2F4F8;
+    --surface:  #FFFFFF;
+    --border:   #DDE3EE;
+    --text:     #18202F;
+    --muted:    #5A6478;
+    --blue:     #1D55D4;
+    --blue-lt:  #E8EEFB;
+    --green:    #15803D;
+    --green-lt: #DCFCE7;
+    --amber:    #B45309;
+    --amber-lt: #FEF3C7;
+    --red:      #B91C1C;
+    --red-lt:   #FEE2E2;
+    --code-bg:  #111827;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14.5px;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    background: var(--text);
+    color: #fff;
+    padding: 28px 40px 24px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .page-header h1 {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+  }
+
+  .page-header p {
+    font-size: 12.5px;
+    color: #94A3B8;
+    margin-top: 3px;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 20px;
+  }
+
+  .hstat {
+    text-align: right;
+  }
+
+  .hstat .n {
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .hstat .l {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748B;
+    margin-top: 2px;
+  }
+
+  /* ── CONTROLS ── */
+  .controls {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+  }
+
+  .filter-btn {
+    flex-shrink: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--muted);
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+
+  .filter-btn:hover { color: var(--blue); }
+  .filter-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+  /* ── MAIN ── */
+  main {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 32px 40px 80px;
+  }
+
+  /* ── TOPIC GROUP ── */
+  .topic-group {
+    margin-bottom: 40px;
+  }
+
+  .topic-group[data-hidden="true"] { display: none; }
+
+  .topic-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .topic-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+
+  .topic-count {
+    font-size: 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 1px 6px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── QUESTION CARD ── */
+  .qcard {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--border);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: border-left-color 0.15s;
+  }
+
+  .qcard:hover { border-left-color: var(--blue); }
+  .qcard.open  { border-left-color: var(--blue); }
+
+  .qcard-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    user-select: none;
+  }
+
+  .diff {
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 2px 6px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .diff-b { background: var(--green-lt); color: var(--green); }
+  .diff-m { background: var(--amber-lt); color: var(--amber); }
+  .diff-h { background: var(--red-lt);   color: var(--red); }
+
+  .qtext {
+    flex: 1;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.45;
+  }
+
+  .qtoggle {
+    color: var(--muted);
+    font-size: 16px;
+    flex-shrink: 0;
+    line-height: 1;
+    transition: transform 0.2s;
+    margin-top: 1px;
+  }
+
+  .qcard.open .qtoggle { transform: rotate(180deg); }
+
+  .qanswer {
+    display: none;
+    padding: 0 16px 16px 42px;
+    border-top: 1px solid var(--bg);
+  }
+
+  .qcard.open .qanswer { display: block; }
+
+  .qanswer p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    line-height: 1.65;
+  }
+
+  .qanswer p:last-child { margin-bottom: 0; }
+
+  .qanswer strong { color: var(--text); font-weight: 600; }
+
+  .answer-code {
+    background: var(--code-bg);
+    padding: 12px 16px;
+    border-radius: 2px;
+    margin: 8px 0;
+    font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+    font-size: 11.5px;
+    line-height: 1.65;
+    color: #94A3B8;
+    overflow-x: auto;
+  }
+
+  .answer-code .kw  { color: #93C5FD; }
+  .answer-code .str { color: #86EFAC; }
+  .answer-code .cm  { color: #334155; }
+  .answer-code .fn  { color: #FDE68A; }
+
+  .tip {
+    background: var(--blue-lt);
+    border-left: 2px solid var(--blue);
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #1E3A8A;
+    margin-top: 8px;
+    line-height: 1.55;
+  }
+
+  .tip strong { color: #1E3A8A; }
+
+  /* ── EMPTY STATE ── */
+  .empty { display: none; text-align: center; padding: 60px 0; color: var(--muted); font-size: 13px; }
+
+  /* ── LEGEND ── */
+  .legend {
+    display: flex;
+    gap: 16px;
+    padding: 0 40px 16px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+</style>
+
+<div class="page-header">
+  <div>
+    <h1>WorkTrack — Interview Prep</h1>
+    <p>Questions an interviewer will ask based on this project's tech stack. Click any question to see the answer.</p>
+  </div>
+  <div class="header-stats">
+    <div class="hstat"><div class="n" id="total-count">63</div><div class="l">Questions</div></div>
+    <div class="hstat"><div class="n">8</div><div class="l">Topics</div></div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="filter-btn active" data-topic="all">All Topics</button>
+  <button class="filter-btn" data-topic="nodejs">Node.js & Express</button>
+  <button class="filter-btn" data-topic="jwt">JWT & Auth</button>
+  <button class="filter-btn" data-topic="socket">Socket.io</button>
+  <button class="filter-btn" data-topic="db">Database & Prisma</button>
+  <button class="filter-btn" data-topic="rbac">RBAC & Security</button>
+  <button class="filter-btn" data-topic="react">React & Redux</button>
+  <button class="filter-btn" data-topic="arch">Architecture</button>
+  <button class="filter-btn" data-topic="hr">Project / HR</button>
+</div>
+
+<div style="padding: 12px 40px 0;">
+  <div class="legend">
+    <div class="legend-item"><span class="diff diff-b">Basic</span> Fresher-level — must know</div>
+    <div class="legend-item"><span class="diff diff-m">Medium</span> Commonly asked — should know</div>
+    <div class="legend-item"><span class="diff diff-h">Deep Dive</span> Senior asks — good to know</div>
+  </div>
+</div>
+
+<main>
+
+  <!-- NODE.JS & EXPRESS -->
+  <div class="topic-group" data-topic="nodejs">
+    <div class="topic-head">
+      <span class="topic-label">Node.js &amp; Express</span>
+      <span class="topic-count">10 questions</span>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-b">Basic</span><span class="qtext">What is middleware in Express.js?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Middleware is a function that runs <strong>between the request arriving and the response being sent</strong>. It has access to <code>req</code>, <code>res</code>, and <code>next</code>. You call <code>next()</code> to pass control to the next middleware, or <code>next(err)</code> to jump to the error handler.</p>
+        <div class="answer-code"><span class="kw">const</span> myMiddleware = (req, res, next) => {
+  <span class="cm">// do something with req/res</span>
+  next()  <span class="cm">// pass to next middleware</span>
+}</div>
+        <p>In this project: <strong>helmet → cors → rateLimiter → authenticate → authorize → validate → controller</strong> — that's the middleware chain for a protected route.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-b">Basic</span><span class="qtext">What is the difference between app.js and server.js in your project?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p><strong>app.js</strong> — creates the Express app, registers all middleware and routes. It's a pure configuration file with no network I/O. It just exports the app function.</p>
+        <p><strong>server.js</strong> — creates the HTTP server, attaches Socket.io, binds the port, connects to the database, and handles graceful shutdown.</p>
+        <div class="tip"><strong>Why separate them?</strong> You can import app.js alone in tests without actually starting a server and binding a port. Socket.io also needs the raw http.Server object, not the Express app.</div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-b">Basic</span><span class="qtext">What does next(err) do vs next()?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p><strong>next()</strong> — passes control to the next middleware in the chain (normal flow).</p>
+        <p><strong>next(err)</strong> — skips all normal middlewares and jumps directly to the <strong>error handler</strong> (a middleware with 4 arguments: err, req, res, next). In this project that's <code>errorHandler.js</code>.</p>
+        <div class="answer-code"><span class="kw">if</span> (!user) <span class="kw">return</span> <span class="fn">next</span>(<span class="kw">new</span> AppError(<span class="str">'User not found'</span>, <span class="fn">401</span>))
+<span class="cm">// ↑ Jumps straight to errorHandler, controller never runs</span></div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-b">Basic</span><span class="qtext">What is CORS? How did you configure it?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>CORS (Cross-Origin Resource Sharing) is a browser security rule that <strong>blocks a website from calling an API on a different domain</strong> unless the server explicitly allows it.</p>
+        <p>In this project: only <code>http://localhost:5173</code> (the React frontend) is allowed. Only GET, POST, PATCH, DELETE methods are permitted.</p>
+        <div class="answer-code">app.use(cors({
+  origin: process.env.CORS_ORIGIN,
+  credentials: <span class="kw">true</span>,   <span class="cm">// allow cookies to be sent</span>
+  methods: [<span class="str">'GET'</span>, <span class="str">'POST'</span>, <span class="str">'PATCH'</span>, <span class="str">'DELETE'</span>],
+}))</div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What is rate limiting? What limits did you set in this project?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Rate limiting <strong>restricts how many requests a client can make in a time window</strong>. It protects against brute-force attacks, DoS attacks, and API abuse.</p>
+        <p>In this project there are two limiters:</p>
+        <p>• <strong>loginLimiter</strong> — 5 login attempts per 15 minutes (stops brute-force on passwords)<br>• <strong>apiLimiter</strong> — 100 requests per 15 minutes on all /api routes</p>
+        <div class="tip"><strong>Interview trick:</strong> Both limiters are disabled in development mode (<code>NODE_ENV === 'development'</code>) so they don't block you while coding.</div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What is graceful shutdown? How did you implement it?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Graceful shutdown means <strong>stopping the server cleanly</strong> — finishing in-flight requests and closing DB connections — instead of killing it instantly.</p>
+        <p><strong>SIGTERM</strong> — sent by Docker/PM2/Kubernetes when they want to stop the process.<br><strong>SIGINT</strong> — sent when you press Ctrl+C in terminal.</p>
+        <div class="answer-code">process.on(<span class="str">'SIGTERM'</span>, () => shutdown(<span class="str">'SIGTERM'</span>))
+
+<span class="kw">const</span> shutdown = <span class="kw">async</span> (signal) => {
+  server.close(<span class="kw">async</span> () => {
+    <span class="kw">await</span> prisma.$disconnect()  <span class="cm">// close DB cleanly</span>
+    process.exit(<span class="fn">0</span>)
+  })
+}</div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What is process.on('unhandledRejection') and why do you need it?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>When a Promise rejects and nobody catches it with <code>.catch()</code> or <code>try/catch</code>, it becomes an <strong>unhandled rejection</strong>. Without this handler, Node.js would silently continue running in a broken state.</p>
+        <p>In this project it logs the error and triggers graceful shutdown — so the process exits cleanly instead of running with unknown corrupted state.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What does express.json({ limit: '10kb' }) do?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>It parses incoming JSON request bodies and puts the result in <code>req.body</code>. The <code>limit: '10kb'</code> rejects any request body larger than 10 kilobytes.</p>
+        <p><strong>Why the limit?</strong> Without it, an attacker could send a 100MB JSON body to crash the server or exhaust memory — called a <strong>body bomb / payload attack</strong>.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-h">Deep Dive</span><span class="qtext">What is Helmet.js and what headers does it set?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Helmet sets <strong>14 HTTP security response headers</strong> automatically. Key ones:</p>
+        <p>• <code>X-Content-Type-Options: nosniff</code> — prevents MIME sniffing attacks<br>• <code>X-Frame-Options: DENY</code> — prevents your site from being iframed (clickjacking)<br>• <code>Strict-Transport-Security</code> — forces HTTPS (HSTS)<br>• <code>Content-Security-Policy</code> — restricts what scripts can run (XSS protection)<br>• <code>X-XSS-Protection</code> — legacy XSS filter for older browsers</p>
+        <div class="tip">Just say: "Helmet adds security headers that protect against XSS, clickjacking, and MIME sniffing. One line of code covers 14 headers."</div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-h">Deep Dive</span><span class="qtext">What is Winston logger? What is DailyRotateFile?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p><strong>Winston</strong> is a structured logging library. Unlike <code>console.log</code>, it supports log levels (error, warn, info, debug), multiple outputs (console + file), and JSON formatting.</p>
+        <p><strong>DailyRotateFile</strong> creates a new log file every day automatically. Old files are deleted after the retention period. In this project: error logs kept 30 days, combined logs kept 14 days.</p>
+        <p>In production, the log level is set to <code>warn</code> — so debug/info messages are suppressed to keep log files small.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- JWT & AUTH -->
+  <div class="topic-group" data-topic="jwt">
+    <div class="topic-head">
+      <span class="topic-label">JWT &amp; Authentication</span>
+      <span class="topic-count">10 questions</span>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-b">Basic</span><span class="qtext">What is JWT? What are its three parts?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>JWT (JSON Web Token) is a compact, signed token used to <strong>verify identity without hitting the database on every request</strong>.</p>
+        <p>Three parts separated by dots: <code>header.payload.signature</code></p>
+        <p>• <strong>Header</strong> — algorithm used (e.g. HS256)<br>• <strong>Payload</strong> — data inside (userId, role, expiry)<br>• <strong>Signature</strong> — HMAC of header+payload using the secret key. Verifies nobody tampered with the token.</p>
+        <div class="tip">The payload is only Base64 encoded — NOT encrypted. Anyone can decode it. Never put passwords or sensitive data in JWT payload.</div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-b">Basic</span><span class="qtext">What is the difference between access token and refresh token?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p><strong>Access Token</strong> — short-lived (15 min). Sent in every API request header. Used to verify identity. Short expiry limits damage if stolen.</p>
+        <p><strong>Refresh Token</strong> — long-lived (7 days). Stored in HttpOnly cookie. Used only to get a new access token when it expires. Never sent to API endpoints.</p>
+        <p>Flow: access token expires → frontend calls <code>/auth/refresh</code> with cookie → gets new access token → continues normally.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-b">Basic</span><span class="qtext">What is an HttpOnly cookie? Why is the refresh token stored in one?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>An HttpOnly cookie <strong>cannot be read by JavaScript</strong> — only the browser sends it automatically with requests. This means even if your site has an XSS vulnerability (malicious script runs), it <strong>cannot steal the refresh token</strong>.</p>
+        <p>If the refresh token was stored in localStorage instead, any XSS attack could read it with <code>localStorage.getItem('refreshToken')</code>.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">Why do you bcrypt.hash the refresh token before saving to the database?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>If the database is compromised (SQL injection, backup leak), the attacker gets the stored refresh token. If it's stored as <strong>plaintext</strong>, they can use it to generate new access tokens and impersonate any user.</p>
+        <p>By storing only the <strong>bcrypt hash</strong>, even if the DB leaks, the attacker cannot reverse the hash to get the original token. On <code>/refresh</code>, we use <code>bcrypt.compare(cookieToken, storedHash)</code> to verify.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What is account lockout? How did you implement it?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Account lockout temporarily blocks a user after too many wrong password attempts — stops brute-force attacks.</p>
+        <p>Implementation: The <code>users</code> table has <code>failedLogins</code> (count) and <code>lockUntil</code> (timestamp) columns.</p>
+        <p>• Wrong password → increment <code>failedLogins</code><br>• At 5 failures → set <code>lockUntil = now + 30 minutes</code>, reset counter<br>• On login → check if <code>lockUntil > now</code>, return 423 with minutes remaining<br>• Successful login → reset both fields to 0/null</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What is refresh token rotation?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Every time the refresh token is used to get a new access token, the server <strong>issues a brand new refresh token</strong> and invalidates the old one. The new one is stored in the DB (as a hash) and set in the cookie.</p>
+        <p><strong>Why?</strong> If an attacker steals the refresh token, they can use it once — but after that the legitimate user's next refresh call will have already rotated it, and the attacker's stolen token is now invalid.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What happens when jwt.verify() fails? What errors can it throw?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>It throws one of two specific errors:</p>
+        <p>• <strong>TokenExpiredError</strong> — token signature is valid but the <code>exp</code> time has passed → return 401 "Access token expired"<br>• <strong>JsonWebTokenError</strong> — token is malformed, tampered with, or signed with wrong secret → return 401 "Invalid access token"</p>
+        <p>In the auth middleware, both are caught separately to return precise error messages.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What does the authenticate middleware do step by step?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>1. Extract token from <code>Authorization: Bearer &lt;token&gt;</code> header<br>2. Call <code>jwt.verify(token, JWT_SECRET)</code> — verify signature + expiry<br>3. Fetch user from DB using <code>decoded.id</code> — confirm user still exists<br>4. Check <code>user.isActive</code> — reject deactivated accounts even with valid token<br>5. Attach <code>req.user = user</code> for controllers to use<br>6. Call <code>next()</code></p>
+        <div class="tip">Why fetch from DB if JWT is already verified? Because the token might be valid but the user could have been deactivated after it was issued. JWT has no way to know that.</div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-h">Deep Dive</span><span class="qtext">What is the difference between authentication and authorization?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p><strong>Authentication</strong> — "Who are you?" — verifying identity. In this project: JWT token verification in <code>authenticate</code> middleware.</p>
+        <p><strong>Authorization</strong> — "What are you allowed to do?" — verifying permissions. In this project: <code>authorize('ADMIN')</code> role check + <code>checkManagerScope</code> team check.</p>
+        <p>Authentication always runs first. Authorization runs after — it needs to know who you are before deciding what you can do.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-h">Deep Dive</span><span class="qtext">How do you change password securely? Why verify the old password first?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>The <code>PATCH /auth/me/password</code> endpoint requires both <code>currentPassword</code> and <code>newPassword</code>.</p>
+        <p><strong>Why verify old password?</strong> The user is already authenticated (has a valid JWT), but their session might have been stolen. Requiring the old password confirms the actual person is making this change — not someone who stole the session token. This prevents account takeover via session hijacking.</p>
+        <p>New password is hashed with <code>bcrypt.hash(newPassword, 12)</code> before saving. Cost factor 12 means it's slow enough to resist brute-force.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOCKET.IO -->
+  <div class="topic-group" data-topic="socket">
+    <div class="topic-head">
+      <span class="topic-label">Socket.io</span>
+      <span class="topic-count">7 questions</span>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-b">Basic</span><span class="qtext">What is the difference between HTTP and WebSocket?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p><strong>HTTP</strong> — Request/Response. Client sends request → server replies → connection closes. Client must ask again for new data.</p>
+        <p><strong>WebSocket</strong> — Persistent bidirectional connection. Client connects once → both sides can send data anytime → connection stays open until one side closes it.</p>
+        <p><strong>In this project:</strong> HTTP is used for all API calls (login, check-in). WebSocket (via Socket.io) is used for real-time events (timer start, leave notification).</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-b">Basic</span><span class="qtext">Why did you use Socket.io in this project?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Two reasons:</p>
+        <p>1. <strong>Live attendance timer</strong> — when an employee checks in, the timer must start instantly on their screen without a page refresh. With HTTP polling you'd need to call the server every few seconds — wastes resources and is laggy.</p>
+        <p>2. <strong>Real-time notifications</strong> — manager gets instant notification when an employee applies for leave. Admin dashboard updates live.</p>
+        <div class="tip">Always explain the business reason, not just the technology. "The requirement said the timer should continue accurately even after page refreshes — that's why Socket.io is used."</div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What is a Socket.io room? How did you use them?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>A room is a named channel that sockets can join. You can emit an event to everyone in a room with one call.</p>
+        <p>In this project there are two types of rooms:</p>
+        <p>• <strong>user:&#123;id&#125;</strong> — each employee has a private room (e.g. "user:5"). Only their events go there. Employee 5 never receives employee 7's events.<br>• <strong>admin</strong> — all connected admins join this room. When any leave is applied, all admins get notified at once.</p>
+        <div class="answer-code">socket.join(<span class="str">`user:${socket.userId}`</span>)
+<span class="kw">if</span> (role === <span class="str">'ADMIN'</span>) socket.join(<span class="str">'admin'</span>)</div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">How do you authenticate Socket.io connections?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Socket.io has its own middleware (separate from Express middleware). It runs before any connection is accepted.</p>
+        <p>The frontend sends the JWT access token in the handshake:</p>
+        <div class="answer-code">io(<span class="str">'http://localhost:5000'</span>, {
+  auth: { token: accessToken }
+})</div>
+        <p>The server middleware calls <code>jwt.verify(token, JWT_SECRET)</code>. If valid, it attaches <code>socket.userId</code> and <code>socket.userRole</code>. If invalid, the connection is rejected before it's established.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">Why does Socket.io need the raw http.Server and not the Express app?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>WebSocket connections start as HTTP but then send an <code>Upgrade</code> request to switch protocols. This upgrade is handled at the <strong>TCP/socket layer</strong> — below Express.</p>
+        <p>The <code>http.Server</code> fires an <code>'upgrade'</code> event for this. Socket.io listens to that event. The Express app never sees upgrade requests — they're intercepted before reaching Express's request handler.</p>
+        <div class="answer-code">http.Server → fires 'upgrade' event → Socket.io takes over
+http.Server → normal HTTP request → Express handles it</div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-h">Deep Dive</span><span class="qtext">How does the live timer survive a page refresh?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>The timer state is in the <strong>database</strong>, not in memory. When the page loads, the frontend calls <code>GET /attendance/live-timer</code> which returns:</p>
+        <div class="answer-code">{
+  active: <span class="kw">true</span>,
+  checkInTime: <span class="str">"2024-01-15T09:00:00Z"</span>,
+  elapsedMs: <span class="fn">14400000</span>  <span class="cm">// Date.now() - checkInTime</span>
+}</div>
+        <p>The frontend reads <code>elapsedMs</code> and resumes the timer from that exact offset. The source of truth is always the DB — not the browser. Refresh doesn't lose anything.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-h">Deep Dive</span><span class="qtext">What is the getIO() function and why do you need it?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p><code>getIO()</code> returns the single shared Socket.io instance. The <code>io</code> variable is in module scope — initialized once when the server starts.</p>
+        <p><strong>Why?</strong> Controllers (like attendance.controller.js) need to emit Socket events. They import <code>emitToUser</code> from socket.js. If <code>io</code> isn't initialized yet and something calls <code>getIO()</code>, it throws "Socket.io not initialized" — a clear error instead of a silent <code>undefined</code>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATABASE & PRISMA -->
+  <div class="topic-group" data-topic="db">
+    <div class="topic-head">
+      <span class="topic-label">Database &amp; Prisma</span>
+      <span class="topic-count">10 questions</span>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-b">Basic</span><span class="qtext">What is Prisma ORM? Why use it instead of writing raw SQL?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Prisma is an ORM (Object Relational Mapper) — it lets you <strong>query the database using JavaScript objects</strong> instead of writing SQL strings.</p>
+        <p>Benefits: type-safe queries (TypeScript catches errors), auto-generated client from schema, migrations management, prevents SQL injection by default (all values are parameterized).</p>
+        <div class="answer-code"><span class="cm">// Prisma — safe, readable</span>
+prisma.user.findUnique({ where: { email } })
+
+<span class="cm">// Raw SQL — error-prone, injection risk if concatenated</span>
+<span class="str">"SELECT * FROM users WHERE email = '" + email + "'"</span></div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-b">Basic</span><span class="qtext">What is a composite UNIQUE constraint? Where did you use it?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>A composite unique constraint means the <strong>combination of two columns must be unique</strong> — neither column alone needs to be unique.</p>
+        <p>Used twice in this project:</p>
+        <p>• <strong>attendances</strong> — <code>UNIQUE(employeeId, date)</code>: one employee can only have one attendance record per day. Employee 5 can appear on Jan 1, and Employee 7 can also appear on Jan 1, but Employee 5 cannot appear twice on Jan 1.<br>• <strong>leave_balances</strong> — <code>UNIQUE(employeeId, year)</code>: one balance row per employee per year.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-b">Basic</span><span class="qtext">What is onDelete: Cascade vs onDelete: SetNull?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p><strong>onDelete: Cascade</strong> — when the parent is deleted, all related children are also deleted automatically. Used on attendances and leaves — if an employee is deleted, their records are deleted too.</p>
+        <p><strong>onDelete: SetNull</strong> — when the parent is deleted, the FK column in the child becomes NULL instead of deleting the child. Used on departmentId and managerId — if a department or manager is deleted, employees are preserved but their department/manager becomes null.</p>
+        <div class="tip">SetNull = preserve data. Cascade = delete everything. Choose based on whether the child record has meaning without the parent.</div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What is prisma.$transaction? Why did you use it in leave approval?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>A transaction groups multiple DB operations so they <strong>either all succeed or all fail together (atomicity)</strong>. If any operation fails, all previous operations in the transaction are rolled back.</p>
+        <p>In leave approval, 3 things happen:</p>
+        <p>1. Update leave status → APPROVED<br>2. Create attendance rows for each leave day<br>3. Deduct leave balance</p>
+        <p>Without a transaction: if step 3 fails, the leave is marked approved and attendance rows exist, but the balance was never deducted. That's corrupted data. With <code>$transaction</code>, all 3 happen or none happen.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What is upsert? Where did you use it and why?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Upsert = <strong>insert if not exists, update if exists</strong>. One operation instead of checking first then inserting/updating.</p>
+        <div class="answer-code">prisma.attendance.upsert({
+  where: { employeeId_date: { employeeId, date } },
+  update: { checkInTime: <span class="kw">new</span> Date(), status: <span class="str">'PRESENT'</span> },
+  create: { employeeId, date, checkInTime: <span class="kw">new</span> Date() }
+})</div>
+        <p>Used in check-in (create today's record or update it if one already exists) and in leave approval (create attendance row for each leave day, or update if the employee already marked something).</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What is Promise.all? Why did you use it in the dashboard and pagination?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p><code>Promise.all</code> runs multiple async operations <strong>in parallel</strong> and waits for all of them to complete. Without it, each DB query runs one after another (sequential).</p>
+        <div class="answer-code"><span class="cm">// Sequential — slow (sum of all query times)</span>
+<span class="kw">const</span> records = <span class="kw">await</span> prisma.attendance.findMany(...)
+<span class="kw">const</span> total   = <span class="kw">await</span> prisma.attendance.count(...)
+
+<span class="cm">// Parallel — fast (time of slowest single query)</span>
+<span class="kw">const</span> [records, total] = <span class="kw">await</span> Promise.all([
+  prisma.attendance.findMany(...),
+  prisma.attendance.count(...)
+])</div>
+        <p>Dashboard uses 6 queries in parallel. Without Promise.all, it would be 6× slower.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What is a self-referential relationship? Where is it in your schema?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>A self-referential (self-join) relationship is when a table has a <strong>foreign key pointing to itself</strong>.</p>
+        <p>In the users table, <code>managerId</code> points to <code>users.id</code> — meaning a user can be the manager of other users. One manager can have many employees, all stored in the same table.</p>
+        <div class="answer-code"><span class="cm">// User ID=5 is manager of User ID=8</span>
+{ id: 5, name: <span class="str">'Manager A'</span>, managerId: null }
+{ id: 8, name: <span class="str">'Employee B'</span>, managerId: 5 }</div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What are ENUMs in the database? Which ones do you have?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>An ENUM is a column that only accepts a <strong>predefined set of string values</strong>. The DB rejects any value not in the list — data integrity at the DB level.</p>
+        <p>In this project:</p>
+        <p>• <strong>Role</strong> — ADMIN, MANAGER, EMPLOYEE<br>• <strong>AttendanceStatus</strong> — PRESENT, ABSENT, HALF_DAY, LEAVE, WFH, FIELD_VISIT<br>• <strong>LeaveType</strong> — CASUAL, SICK, HALF_DAY, EARLY_LEAVE, WFH, FIELD_VISIT<br>• <strong>LeaveStatus</strong> — PENDING, APPROVED, REJECTED</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-h">Deep Dive</span><span class="qtext">What is @@index in Prisma schema? Why did you add indexes?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>A database index speeds up queries on that column by creating a separate sorted data structure. Without an index, every query scans the entire table (full table scan). With an index, the DB jumps directly to matching rows.</p>
+        <p>In users: <code>@@index([role])</code>, <code>@@index([departmentId])</code>, <code>@@index([managerId])</code> — these columns are frequently used in WHERE clauses (e.g. "find all employees of this manager").</p>
+        <div class="tip">Trade-off: indexes speed up reads but slow down writes (insert/update must update the index too). Index columns you filter by frequently.</div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-h">Deep Dive</span><span class="qtext">What does groupBy do in Prisma? Where did you use it?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p><code>groupBy</code> is equivalent to SQL's <code>GROUP BY</code> — it aggregates rows that share a column value and lets you count/sum them.</p>
+        <p>Used in the admin dashboard:</p>
+        <div class="answer-code">prisma.attendance.groupBy({
+  by: [<span class="str">'status'</span>],
+  _count: { status: <span class="kw">true</span> }
+})
+<span class="cm">// Returns: [{status:'PRESENT', _count:{status:142}}, ...]</span></div>
+        <p>This gives you "how many PRESENT, how many ABSENT, how many LEAVE" for the whole month in one query — instead of separate count queries per status.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RBAC & SECURITY -->
+  <div class="topic-group" data-topic="rbac">
+    <div class="topic-head">
+      <span class="topic-label">RBAC &amp; Security</span>
+      <span class="topic-count">8 questions</span>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-b">Basic</span><span class="qtext">What is RBAC? How does it work in your project?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>RBAC (Role-Based Access Control) means <strong>permissions are assigned to roles, not individual users</strong>. Every user has a role, and that role determines what they can do.</p>
+        <p>In this project: Admin can do everything. Manager can only manage their own team. Employee can only access their own data. One middleware function enforces this:</p>
+        <div class="answer-code">router.get(<span class="str">'/'</span>, authenticate, authorize(<span class="str">'ADMIN'</span>), getAllUsers)
+<span class="cm">// Only ADMIN role can reach getAllUsers controller</span></div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What is manager scope guard? What problem does it solve?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>The role guard only checks if you're a MANAGER. It doesn't check <em>which</em> employees you can access. Without scope guard, Manager A could view Manager B's team data by guessing employee IDs.</p>
+        <p>Scope guard verifies: <strong>"does this employee's managerId match the requesting manager's id?"</strong></p>
+        <div class="answer-code"><span class="kw">const</span> target = <span class="kw">await</span> prisma.user.findFirst({
+  where: { id: targetId, managerId: req.user.id }
+})
+<span class="kw">if</span> (!target) → <span class="fn">403</span> <span class="str">'Not your team member'</span></div>
+        <p>This is called <strong>horizontal privilege escalation</strong> prevention — same role, different data scope.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What is input validation? What does stripUnknown do in Joi?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Input validation ensures request body fields are the correct type, format, and range before they reach the controller. Done with Joi schemas.</p>
+        <p><strong>stripUnknown: true</strong> silently removes any fields from the body that are NOT defined in the Joi schema. This prevents <strong>mass-assignment attacks</strong>:</p>
+        <div class="answer-code"><span class="cm">// Attacker sends: { email, password, role: 'ADMIN' }</span>
+<span class="cm">// Schema only defines email + password</span>
+<span class="cm">// After stripUnknown: { email, password } — role removed ✓</span></div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What is XSS? How does this project protect against it?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>XSS (Cross-Site Scripting) — attacker injects malicious JavaScript into your page. If the script runs, it can steal tokens from localStorage, read cookies, etc.</p>
+        <p>Protection in this project:</p>
+        <p>• <strong>HttpOnly cookies</strong> — refresh token can't be read by JS, even if XSS runs<br>• <strong>Helmet's Content-Security-Policy</strong> — restricts what scripts are allowed to run<br>• <strong>Input validation with Joi</strong> — malicious strings stripped or rejected before reaching DB</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What is SQL injection? How does Prisma prevent it?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>SQL injection — attacker puts SQL code in a form field to manipulate the query. Classic example: <code>email = "' OR 1=1 --"</code></p>
+        <p>Prisma uses <strong>parameterized queries</strong> internally. All values are passed as parameters, never concatenated into the SQL string. The DB treats them as data, never as SQL code.</p>
+        <div class="answer-code"><span class="cm">// Prisma generates internally:</span>
+<span class="cm">// SELECT * FROM users WHERE email = ?  (with value bound separately)</span>
+<span class="cm">// Attacker's SQL code is treated as a literal string, not executed</span></div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-h">Deep Dive</span><span class="qtext">What is the AppError class and why did you create it?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>AppError extends the native Error class and adds two things: <code>statusCode</code> (HTTP status) and <code>isOperational: true</code>.</p>
+        <p><strong>isOperational</strong> is the key flag. In the error handler, we check it:</p>
+        <p>• <strong>AppError (operational)</strong> — known business errors (user not found, invalid input). Send the message directly to the client.<br>• <strong>Unknown errors</strong> — bugs, DB crashes. Never expose internals. Send "Internal server error" and log the full stack trace.</p>
+        <div class="tip">This distinction prevents accidentally leaking stack traces, file paths, or DB query details in error responses.</div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-h">Deep Dive</span><span class="qtext">Why is the global error handler the LAST middleware in Express?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Express identifies the global error handler by its 4-argument signature: <code>(err, req, res, next)</code>. It only runs when <code>next(err)</code> is called from any previous middleware or route.</p>
+        <p>It must be registered <strong>after all routes</strong> because Express processes middleware in the order they're registered. If you put it before routes, it would never receive errors from routes that haven't been registered yet.</p>
+        <div class="answer-code"><span class="cm">// app.js — order matters</span>
+app.use(routes)       <span class="cm">// all routes first</span>
+app.all(<span class="str">'*'</span>, ...)    <span class="cm">// 404 catch</span>
+app.use(errorHandler) <span class="cm">// error handler LAST</span></div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-h">Deep Dive</span><span class="qtext">What is the Prisma error handling in errorHandler.js? Why do you handle P2002 specially?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Prisma throws typed errors with error codes. <strong>P2002</strong> is a unique constraint violation — e.g. trying to register with an email that already exists.</p>
+        <p>Without special handling, Prisma would throw a raw DB error with table names and constraint names exposed. The error handler maps it to a human-readable message:</p>
+        <div class="answer-code"><span class="cm">// P2002 constraint name contains "email"</span>
+<span class="cm">// → "A user with this email address already exists"</span>
+<span class="cm">// instead of raw Prisma error with DB internals</span></div>
+        <p>Other codes: P2025 (not found → 404), P2003 (FK violation → 400).</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- REACT & REDUX -->
+  <div class="topic-group" data-topic="react">
+    <div class="topic-head">
+      <span class="topic-label">React &amp; Redux</span>
+      <span class="topic-count">6 questions</span>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-b">Basic</span><span class="qtext">What is Redux Toolkit? What slices do you have?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Redux Toolkit is the official, simplified way to use Redux for global state management. Instead of writing action types + action creators + reducers separately, you use <code>createSlice</code>.</p>
+        <p>In this project there are 3 slices:</p>
+        <p>• <strong>authSlice</strong> — current user, token, login/logout state<br>• <strong>attendanceSlice</strong> — today's record, check-in/out status<br>• <strong>leaveSlice</strong> — leave list, balance, pending requests</p>
+        <div class="tip">Why Redux and not just useState? These slices are needed across many components — the navbar, dashboard, attendance card all need auth info. Passing it via props everywhere (prop drilling) would be messy.</div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-b">Basic</span><span class="qtext">What is a ProtectedRoute component? How does it work?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>ProtectedRoute is a wrapper component that <strong>checks if the user is authenticated before rendering a page</strong>. If not logged in, it redirects to the login page.</p>
+        <div class="answer-code"><span class="kw">const</span> ProtectedRoute = ({ children, roles }) => {
+  <span class="kw">const</span> { user } = useAuth()
+  <span class="kw">if</span> (!user) <span class="kw">return</span> &lt;Navigate to=<span class="str">"/login"</span> /&gt;
+  <span class="kw">if</span> (roles &amp;&amp; !roles.includes(user.role)) <span class="kw">return</span> &lt;Navigate to=<span class="str">"/403"</span> /&gt;
+  <span class="kw">return</span> children
+}</div>
+        <p>It also checks the user's role — an employee trying to access the admin dashboard gets redirected to a 403 page.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What is an Axios interceptor? How is it used here?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>An interceptor is a function that runs automatically before every request is sent or after every response is received — without repeating code in every API call.</p>
+        <p><strong>Request interceptor</strong> — automatically adds the <code>Authorization: Bearer &lt;token&gt;</code> header to every API call. No need to manually add it everywhere.</p>
+        <p><strong>Response interceptor</strong> — if a response comes back with 401 (token expired), automatically calls <code>/auth/refresh</code> to get a new token, then retries the original request. The user never sees the expiry.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What does the useSocket hook do?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>The <code>useSocket</code> hook manages the Socket.io connection lifecycle:</p>
+        <p>• Connects to the server with the JWT access token on mount<br>• Registers event listeners (attendance:checkedIn, leave:approved, etc.)<br>• Disconnects and cleans up listeners when the component unmounts</p>
+        <p>Without cleanup, if the component re-renders, you'd register duplicate listeners and fire events multiple times — a common React bug with WebSockets.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What does the useLiveTimer hook do?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>On mount, it calls <code>GET /attendance/live-timer</code> to get the check-in time and <code>elapsedMs</code> from the server. It then starts a <code>setInterval</code> that ticks every second to update the displayed time.</p>
+        <p>This is why the timer is accurate after page refresh — the starting offset comes from the server (which calculated it from the DB's <code>checkInTime</code>), not from a local variable that resets on refresh.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-h">Deep Dive</span><span class="qtext">Why do you have separate API modules (auth, attendance, leave) instead of one file?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Separation of concerns — each module contains only the API calls related to one domain. Benefits:</p>
+        <p>• Easier to find: all leave API calls are in <code>leave.js</code>, not scattered across files<br>• Easier to change: if the base URL changes, you update one place per module<br>• Easier to test: you can mock the entire leave module in tests<br>• Readable imports: <code>import { applyLeave } from '../api/leave'</code> is self-documenting</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARCHITECTURE -->
+  <div class="topic-group" data-topic="arch">
+    <div class="topic-head">
+      <span class="topic-label">Architecture &amp; Patterns</span>
+      <span class="topic-count">6 questions</span>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-b">Basic</span><span class="qtext">What is MVC pattern? How is it applied in this project?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>MVC (Model-View-Controller) separates the application into 3 layers, each with one job:</p>
+        <p>• <strong>Model</strong> — data layer. In this project: Prisma schema + DB queries inside controllers.<br>• <strong>View</strong> — presentation layer. In this project: the React frontend.<br>• <strong>Controller</strong> — business logic. In this project: controllers/*.controller.js — receives request, queries DB, sends response.</p>
+        <p>Routes define which URL maps to which controller. Middlewares run before the controller.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-b">Basic</span><span class="qtext">What is the consistent API response shape in this project?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Every response — success or error — follows the same shape:</p>
+        <div class="answer-code"><span class="cm">// Success</span>
+{ success: <span class="kw">true</span>,  message: <span class="str">'...'</span>, data: { ... } }
+
+<span class="cm">// Error</span>
+{ success: <span class="kw">false</span>, message: <span class="str">'...'</span>, errors: [...] }</div>
+        <p>This is done via <code>sendResponse()</code> and <code>sendError()</code> utility functions. The frontend always knows: check <code>success</code> first, then read <code>data</code> or <code>message</code>. No guessing the response structure.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What is pagination? How did you implement it?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Pagination splits large result sets into pages instead of returning all rows at once — prevents slow queries and large payloads.</p>
+        <div class="answer-code"><span class="cm">// Query params: ?page=2&limit=20</span>
+<span class="kw">const</span> skip = (page - <span class="fn">1</span>) * limit  <span class="cm">// skip first 20 rows</span>
+prisma.attendance.findMany({ skip, take: limit })
+prisma.attendance.count({ where })  <span class="cm">// total for UI</span>
+
+<span class="cm">// Response includes pagination metadata</span>
+{ records, pagination: { total, page, limit, totalPages } }</div>
+        <p>Both queries run in <code>Promise.all</code> — parallel, not sequential.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What is environment variables (.env)? What variables does this project use?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Environment variables store <strong>configuration that changes between environments</strong> (dev/staging/prod) and secrets that should never be in source code.</p>
+        <p>In this project: <code>DATABASE_URL</code>, <code>JWT_SECRET</code>, <code>JWT_REFRESH_SECRET</code>, <code>JWT_EXPIRES_IN</code>, <code>CORS_ORIGIN</code>, <code>PORT</code>, <code>NODE_ENV</code>, rate limit values.</p>
+        <div class="tip"><strong>.env is in .gitignore</strong> — never committed. The .env.example file is committed to show teammates what variables they need to set, without exposing real values.</div>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-h">Deep Dive</span><span class="qtext">What is the leave overlap check? How does the query work?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Before applying leave, we check if the employee already has a leave that overlaps the requested dates. Two date ranges overlap when:</p>
+        <div class="answer-code"><span class="cm">// Range A: existing leave (startA → endA)</span>
+<span class="cm">// Range B: new request (startB → endB)</span>
+<span class="cm">// They overlap when: startA &lt;= endB AND endA &gt;= startB</span>
+where: {
+  status: { in: [<span class="str">'PENDING'</span>, <span class="str">'APPROVED'</span>] },
+  OR: [{ startDate: { lte: endB }, endDate: { gte: startB } }]
+}</div>
+        <p>This prevents an employee from applying for two leaves on overlapping dates.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-h">Deep Dive</span><span class="qtext">Why does leave approval skip weekends when creating attendance rows?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>When leave is approved for a date range (e.g. Monday–Friday), the server loops through every day and creates attendance rows. Saturday (day 6) and Sunday (day 0) are skipped:</p>
+        <div class="answer-code"><span class="kw">if</span> (day.getDay() === <span class="fn">0</span> || day.getDay() === <span class="fn">6</span>) <span class="kw">continue</span>
+<span class="cm">// 0 = Sunday, 6 = Saturday</span></div>
+        <p>Also, working days count (for balance deduction) excludes weekends. If you apply for Mon–Fri, it deducts 5 days, not 7. <code>countWorkingDays()</code> filters weekends before counting.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- HR / PROJECT -->
+  <div class="topic-group" data-topic="hr">
+    <div class="topic-head">
+      <span class="topic-label">Project / HR Questions</span>
+      <span class="topic-count">6 questions</span>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-b">Basic</span><span class="qtext">Tell me about this project. What does it do?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p><strong>WorkTrack is a workforce management system</strong> built with Node.js, Express, Prisma ORM, MySQL, and React. It manages three roles: Admin, Manager, and Employee.</p>
+        <p>Core features: employees mark daily attendance with GPS location capture and a live working-hours timer. They can apply for 6 types of leave — managers approve or reject their team's requests. Admins have a dashboard with real-time org-wide statistics.</p>
+        <p>Key technical aspects: JWT dual-token authentication, Socket.io for real-time events, RBAC with manager scope isolation, Prisma transactions for atomic operations, and 14+ security measures.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-b">Basic</span><span class="qtext">What was the most challenging part of this project?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Good answers to pick from (be specific, not vague):</p>
+        <p>1. <strong>Live timer across page refresh</strong> — realizing the timer state had to live in the DB, not in memory. Implementing the <code>/live-timer</code> endpoint that returns elapsed milliseconds.</p>
+        <p>2. <strong>Leave approval transaction</strong> — needing three separate DB operations to happen atomically. Learning about <code>prisma.$transaction</code> to ensure no partial state.</p>
+        <p>3. <strong>Manager scope isolation</strong> — understanding that role check alone isn't enough. A manager can't be allowed to see another manager's team data just because they share the same role.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">What would you improve if you had more time?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>Good answers (shows technical thinking):</p>
+        <p>1. <strong>Refresh token family / reuse detection</strong> — detect if a stolen refresh token is used (if old token is used, invalidate all sessions)<br>2. <strong>Automatic ABSENT marking</strong> — a cron job that marks employees absent if they didn't check in by end of day<br>3. <strong>Email notifications</strong> — email the employee when leave is approved/rejected, instead of only Socket event<br>4. <strong>Unit + integration tests</strong> — test each controller with a test database<br>5. <strong>Redis for rate limiting</strong> — current in-memory rate limiter resets on server restart. Redis persists across restarts.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">How would you scale this if there were 10,000 employees?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>1. <strong>Database indexing</strong> — already done in this project (@@index on role, departmentId, managerId)<br>2. <strong>Redis caching</strong> — cache dashboard stats that are read frequently and change rarely<br>3. <strong>Socket.io with Redis adapter</strong> — if running multiple server instances, Socket rooms must be shared via Redis pub/sub<br>4. <strong>Connection pooling</strong> — Prisma already manages a connection pool, but configure pool size for load<br>5. <strong>Horizontal scaling</strong> — run multiple Node.js instances behind a load balancer (stateless design helps here — no session stored in memory)</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-m">Medium</span><span class="qtext">Why did you choose MySQL over MongoDB for this project?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>This data is <strong>highly relational</strong> — users belong to departments, employees report to managers, attendance links to employees, leaves link to employees and reviewers, balances link to employees and years.</p>
+        <p>MySQL gives us: foreign key constraints (data integrity), JOINs for reports, UNIQUE constraints to prevent duplicate records, and transactions for atomic operations like leave approval.</p>
+        <p>MongoDB would be a poor fit here — you'd lose referential integrity, transactions are more complex, and the data structure is strongly typed with clear relationships.</p>
+      </div>
+    </div>
+
+    <div class="qcard" onclick="toggle(this)">
+      <div class="qcard-head"><span class="diff diff-h">Deep Dive</span><span class="qtext">How does the attendance status get set when leave is approved?</span><span class="qtoggle">&#8964;</span></div>
+      <div class="qanswer">
+        <p>There's a mapping table in the leave controller:</p>
+        <div class="answer-code"><span class="kw">const</span> LEAVE_TO_ATTENDANCE = {
+  CASUAL:      <span class="str">'LEAVE'</span>,
+  SICK:        <span class="str">'LEAVE'</span>,
+  HALF_DAY:    <span class="str">'HALF_DAY'</span>,
+  EARLY_LEAVE: <span class="str">'PRESENT'</span>,  <span class="cm">// still counts as present!</span>
+  WFH:         <span class="str">'WFH'</span>,
+  FIELD_VISIT: <span class="str">'FIELD_VISIT'</span>
+}</div>
+        <p>EARLY_LEAVE maps to PRESENT because the employee came to work — they just left early. FIELD_VISIT and WFH don't deduct balance either — they're tracked in attendance but don't consume leave days.</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  function toggle(card) {
+    card.classList.toggle('open');
+  }
+
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const groups = document.querySelectorAll('.topic-group');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const topic = btn.dataset.topic;
+
+      groups.forEach(g => {
+        if (topic === 'all' || g.dataset.topic === topic) {
+          g.setAttribute('data-hidden', 'false');
+          g.style.display = '';
+        } else {
+          g.setAttribute('data-hidden', 'true');
+          g.style.display = 'none';
+        }
+      });
+    });
+  });
+</script>
+
+</body></html>

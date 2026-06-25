@@ -6,12 +6,6 @@ The system should maintain daily attendance records, including check-in time, ch
 
 Managers should have access to attendance records and leave requests for employees reporting to them, while the Admin should have access to organization-wide attendance, employee management, leave management, and reporting. The Admin dashboard should provide insights such as total employees, present employees, absent employees, employees on leave, and attendance statistics.
 
-reade the above requirment carefully 
-i want to manage this task by the advance feature of node in backend and frontend in react 
-
-a clean uI for the application and clean mvc pattenr for node and security feature more for api read the requirment and provide the plan what is you plan to complete this projetc tell me in detail 
-
-note plane first and model for then we start the word not do the code start first 
 
 client/src/
 ├── api/           axios.js + 6 API modules (auth, attendance, leave, user, dept, report)
